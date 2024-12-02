@@ -1,4 +1,6 @@
-#include #include #include
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 typedef struct _tree{
 int value;
 struct _tree* pLeft;
