@@ -223,6 +223,17 @@ return pTree;
 }
 
 int main(){
+	int v1,v2,v3;
+	int sum2;
+	int sum3;
+	
+	while ( scanf("%d;%d;%d\n",&v1,&v2,&v3) == 3){
+		if (v1==0){
+			sum2 += v2;
+			sum3 += v3;
+		}
+	}
+	printf("0;%d;%d\n", sum2, sum3);
 
 // Tree* pAVL1 = NULL;
 // Tree* pAVL2 = NULL;
