@@ -51,3 +51,21 @@ if [ ! -f "$c_executable" ]; then
     fi
     echo "Compilation réussie."
 fi
+
+# Verfifier la presence du dossier tmp et graphs
+
+
+if [ ! -d "tmp" ]; then
+  mkdir tmp
+  echo "Le dossier 'tmp' a été créé."
+else
+  echo "Le dossier 'tmp' existe déjà."
+fi
+
+if [ ! -d "graphs" ]; then
+  mkdir tmp
+  echo "Le dossier 'graphs' a été créé."
+else
+  echo "Le dossier 'graphs' existe déjà."
+fi
+
