@@ -150,9 +150,9 @@ Tree* insertAVL(Tree* a, int i,int c,int l,int* h) {
     } else if (i > a->id) {
         a->pRight = insertAVL(a->pRight, i,c,l, h);
     } else {
-        a->capacity =  c;
+        a->capacity += c;
         a->load += l;
-        *h = 0; // L'élément est déjà présent dans l'arbre ne rien faire ! Il faut surement changer ça
+        *h = 0; // L'élément est déjà présent dans l'arbre
         return a;
     }
 
@@ -172,7 +172,7 @@ Tree* insertAVL(Tree* a, int i,int c,int l,int* h) {
 void infix(Tree* p){
     if(p!=NULL){
         infix(p->pLeft);
-        printf("[%02d(%2d)]", p->id, p->balance);
+        printf("%02d:%02d:%02d\n", p->id, p->capacity, p->load);
         infix(p->pRight);
     }
 }
@@ -200,9 +200,8 @@ int main(){
 			AVLproj = insertAVL(AVLproj,v1,v2,v3,pH);
 		
 	}
+	infix(AVLproj);
 
 
 return 0;
 }
-
-
