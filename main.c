@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 typedef struct _tree{
-int value;
+int id;
 struct _tree* pLeft;
 struct _tree* pRight;
 int balance;
