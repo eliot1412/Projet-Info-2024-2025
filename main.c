@@ -33,8 +33,8 @@ pPivot->pLeft = pRoot;
 // update balance values
 int eqa = pRoot->balance;
 int eqp = pPivot->balance;
-pRoot->balance = eqa - max2(eqp, 0) - 1;// il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
-pPivot->balance = min3(eqa-2, eqa+eqp-2, eqp-1); // il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
+pRoot->balance = eqa - max2(eqp, 0) - 1;
+pPivot->balance = min3(eqa-2, eqa+eqp-2, eqp-1);
 // return new root
 //
 pRoot = pPivot;
@@ -51,8 +51,8 @@ pPivot->pRight = pRoot;
 // update balance values
 int eqa = pRoot->balance;
 int eqp = pPivot->balance;
-pRoot->balance = eqa - min2(eqp, 0) + 1;// il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
-pPivot->balance = max3(eqa+2, eqa+eqp+2, eqp+1); // il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
+pRoot->balance = eqa - min2(eqp, 0) + 1;
+pPivot->balance = max3(eqa+2, eqa+eqp+2, eqp+1); 
 // return new root
 
 pRoot = pPivot;
@@ -231,128 +231,15 @@ int main(){
 	int sum3;
 	
 	while ( scanf("%d;%d;%d\n",&v1,&v2,&v3) == 3){
-		if (v1==0){
+		
 			sum2 += v2;
 			sum3 += v3;
-		}
+		
 	}
-	printf("0;%d;%d\n", sum2, sum3);
 
-// Tree* pAVL1 = NULL;
-// Tree* pAVL2 = NULL;
-
-// set the seed value
-// srand(0);
-
-// pAVL1 = insertAVL(pAVL1, 1);
-// pAVL1 = insertAVL(pAVL1, 2);
-// pAVL1 = insertAVL(pAVL1, 3);
-
-// pAVL1 = rotateLeft(pAVL1);
-
-// pAVL2 = insertAVL(pAVL2, 3);
-// pAVL2 = insertAVL(pAVL2, 2);
-// pAVL2 = insertAVL(pAVL2, 1);
-
-// pAVL2 = rotateRight(pAVL2);
-
-// Créer l'arbre initial avec les valeurs appropriées
-Tree* pAVL = NULL;
-int h = 0;
-int* pH = &h;
-// Insertion manuelle des valeurs, en mettant à jour l'équilibrage
-pAVL = insertAVL(pAVL, 10,pH);
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-pAVL = insertAVL(pAVL, 5,pH);
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-pAVL = insertAVL(pAVL, 20,pH);
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-pAVL = insertAVL(pAVL, 15,pH);
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-pAVL = insertAVL(pAVL, 13,pH);
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-pAVL = insertAVL(pAVL, 17,pH);
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-pAVL = insertAVL(pAVL, 26,pH);
-
-
-
-// Afficher l'arbre en ordre préfixe et infixe pour vérifier
-printf("INFIX : ");
-infix(pAVL);
-printf("\n");
-
-printf("PREFIX : ");
-prefix(pAVL);
-printf("\n");
-//pAVL = insertAVL(pAVL, 20);
-//pAVL = rotateLeft(pAVL);
-
-// Exemple de rotation droite après insertion
-//pAVL = insertAVL(pAVL, 2);
-//pAVL = rotateRight(pAVL);
-//printf("INFIX : ");
-// infix(pAVL);
-// printf("\n");
-
-// printf("PREFIX : ");
-// prefix(pAVL);
-// printf("\n");
 
 return 0;
 }
-
-// Tree* pAVL1 = NULL;
-// Tree* pAVL2 = NULL;
-
-// set the seed value
-// srand(0);
-
-// pAVL1 = insertAVL(pAVL1, 1);
-// pAVL1 = insertAVL(pAVL1, 2);
-// pAVL1 = insertAVL(pAVL1, 3);
-
-// pAVL1 = rotateLeft(pAVL1);
-
-// pAVL2 = insertAVL(pAVL2, 3);
-// pAVL2 = insertAVL(pAVL2, 2);
-// pAVL2 = insertAVL(pAVL2, 1);
-
-// pAVL2 = rotateRight(pAVL2);
-
-// printf("INFIX1 : ");
-// printf("\n");
-
-// printf("PREFIX1 : ");
-// prefix(pAVL1);
-// printf("\n");
-
-// printf("INFIX2 : ");
-// infix(pAVL2);
-// printf("\n");
-
-// printf("PREFIX2 : ");
-// prefix(pAVL2);
-// printf("\n");
-
-
-
-
-
-// return 0;
-//}
 
 
 
