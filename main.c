@@ -3,7 +3,9 @@
 #include <time.h>
 
 typedef struct _tree{
-    int           id;
+    int id;
+    int capacity;
+    int load;
     struct _tree* pLeft;
     struct _tree* pRight;
     int           balance;
@@ -31,13 +33,12 @@ Tree* rotateLeft(Tree* pRoot){
     Tree* pPivot  = pRoot->pRight;
     pRoot->pRight = pPivot->pLeft;
     pPivot->pLeft = pRoot;
-    // update balance values
+    // update balance ids
     int eqa = pRoot->balance;        
     int eqp = pPivot->balance;        
-    pRoot->balance  = eqa - max2(eqp, 0) - 1;// il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
-    pPivot->balance = min3(eqa-2, eqa+eqp-2, eqp-1); // il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
+    pRoot->balance  = eqa - max2(eqp, 0) - 1;
+    pPivot->balance = min3(eqa-2, eqa+eqp-2, eqp-1); 
     // return new root
-    //
     pRoot = pPivot;
     return pRoot;
 }
@@ -49,11 +50,11 @@ Tree* rotateRight(Tree* pRoot){
     Tree* pPivot  = pRoot->pLeft;
     pRoot->pLeft = pPivot->pRight;
     pPivot->pRight = pRoot;
-    // update balance values
+    // update balance ids
     int eqa = pRoot->balance;        
     int eqp = pPivot->balance;        
-    pRoot->balance  = eqa - min2(eqp, 0) + 1;// il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
-    pPivot->balance = max3(eqa+2, eqa+eqp+2, eqp+1); // il faut comprendre les min max au DS car c est tout les cas de rotations c est l ensemble de toute les solutions possibles
+    pRoot->balance  = eqa - min2(eqp, 0) + 1;
+    pPivot->balance = max3(eqa+2, eqa+eqp+2, eqp+1); 
     // return new root
 
     pRoot = pPivot;
@@ -110,12 +111,14 @@ Tree* balanceAVL(Tree* pRoot){
 
 
 
-Tree* createAVL(int v){
+Tree* createAVL(int i,int c,int l){
     Tree* pNew = malloc(sizeof(Tree));
-    if(pNew == NULL){
+    if(pNew == NULL ){
         exit(10);
     }
-    pNew->value  = v;
+    pNew->id  = i;
+    pNew->capacity  = c;
+    pNew->load  = l;
     pNew->pLeft  = NULL;
     pNew->pRight = NULL;
     pNew->balance= 0;
@@ -126,10 +129,10 @@ int searchAVL(Tree* pTree, int v){
     if(pTree == NULL){
         return 0;
     }
-    else if(pTree->value == v){
+    else if(pTree->id == v){
         return 1;
     }
-    else if(v > pTree->value){
+    else if(v > pTree->id){
         return searchAVL(pTree->pRight, v);
     }
     else{
@@ -137,17 +140,19 @@ int searchAVL(Tree* pTree, int v){
     }
 }
 
-Tree* insertAVL(Tree* a, int e, int* h) {
+Tree* insertAVL(Tree* a, int i,int c,int l,int* h) {
     if (a == NULL) {
         *h = 1;
-        return createAVL(e);
-    } else if (e < a->value) {
-        a->pLeft = insertAVL(a->pLeft, e, h);
+        return createAVL(i,c,l);
+    } else if (i < a->id) {
+        a->pLeft = insertAVL(a->pLeft, i,c,l, h);
         *h = -*h;
-    } else if (e > a->value) {
-        a->pRight = insertAVL(a->pRight, e, h);
+    } else if (i > a->id) {
+        a->pRight = insertAVL(a->pRight, i,c,l, h);
     } else {
-        *h = 0; // L'élément est déjà présent dans l'arbre
+        a->capacity =  c;
+        a->load += l;
+        *h = 0; // L'élément est déjà présent dans l'arbre ne rien faire ! Il faut surement changer ça
         return a;
     }
 
@@ -167,83 +172,37 @@ Tree* insertAVL(Tree* a, int e, int* h) {
 void infix(Tree* p){
     if(p!=NULL){
         infix(p->pLeft);
-        printf("[%02d(%2d)]", p->value, p->balance);
+        printf("[%02d(%2d)]", p->id, p->balance);
         infix(p->pRight);
     }
 }
 
 void prefix(Tree* p){
     if(p!=NULL){
-        printf("[%02d(%2d)]", p->value, p->balance);
+        printf("[%02d(%2d)]", p->id, p->balance);
         prefix(p->pLeft);
         prefix(p->pRight);
     }
 }
 
-Tree* suppMax(Tree* pTree, int* pValue ){
-    if(pTree == NULL || pValue == NULL){
-        exit(100);
-    }
-    if(pTree->pRight != NULL){
-        pTree->pRight = suppMax(pTree->pRight, pValue);
-    }
-    else{
-        // Store address to free
-        Tree* pRemove = pTree;
-        // exchange number values
-        *pValue = pTree->value;
-        // link left child
-        pTree = pTree->pLeft;
-        // free
-        free(pRemove);
-    }
-    return pTree;
-}
 
-Tree* removeAVL(Tree* pTree, int v){
-    if(pTree != NULL){
-        if(v < pTree->value){
-            pTree->pLeft = removeAVL(pTree->pLeft, v);
-        }
-        else if(v > pTree->value){
-            pTree->pRight = removeAVL(pTree->pRight, v);
-        }
-        else{
-            if(pTree->pLeft != NULL && pTree->pRight != NULL){
-                // suppmin / suppmax
-                pTree->pLeft = suppMax(pTree->pLeft, &(pTree->value) );
-            }
-            else{
-                // remove directly                
-                // send child back
-                Tree* pChild = pTree->pLeft;
-                if(pChild == NULL){
-                    pChild = pTree->pRight;
-                }
-                free(pTree);
-                pTree = pChild;
-            }
-        }    
-    }
-    return pTree;
-}
+
+
 
 int main(){
+	int h;
+	int* pH = &h;
 	int v1,v2,v3;
-	int sum2;
-	int sum3;
+    Tree* AVLproj = NULL;
 	
 	while ( scanf("%d;%d;%d\n",&v1,&v2,&v3) == 3){
 		
-			sum2 += v2;
-			sum3 += v3;
+			AVLproj = insertAVL(AVLproj,v1,v2,v3,pH);
 		
 	}
 
 
 return 0;
 }
-
-
 
 
