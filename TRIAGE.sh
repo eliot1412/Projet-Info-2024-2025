@@ -64,6 +64,7 @@ fi
 
 # Début de la mesure du temps de traitement
 start_time=$(date +%s.%N)
+# il faudra la fonction et la mettre a la fin pour mesurer le temps de traitement a la fin
 
 # Verfifier la presence du dossier tmp et graphs
 
