@@ -125,21 +125,6 @@ Tree* createAVL(int i,int c,int l){
     return pNew;
 }
 
-int searchAVL(Tree* pTree, int v){
-    if(pTree == NULL){
-        return 0;
-    }
-    else if(pTree->id == v){
-        return 1;
-    }
-    else if(v > pTree->id){
-        return searchAVL(pTree->pRight, v);
-    }
-    else{
-        return searchAVL(pTree->pLeft, v);
-    }
-}
-
 Tree* insertAVL(Tree* a, int i,int c,int l,int* h) {
     if (a == NULL) {
         *h = 1;
