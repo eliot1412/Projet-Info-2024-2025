@@ -42,8 +42,8 @@ if { [ "$type_station" = "hvb" ] || [ "$type_station" = "hva" ]; } && { [ "$type
 fi
 
 # Vérification de l'exécutable C
-c_executable="ex2"
-c_source="ex2.c"
+c_executable="main"
+c_source="main.c"
 
 if [ ! -f "$c_executable" ]; then
     echo "L'exécutable C n'est pas présent. Compilation en cours..."
@@ -83,31 +83,51 @@ else
   echo "Le dossier 'graphs' existe déjà."
 fi
 
-echo "HVB ? HVA ? LV ?"
+#TRIAGE SWITCH CASE
+#si hvb != 0 alor garder ligne
+#cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$2 != 0' | awk -F';' '$3 = 0'
+
+#cat c-wire_v00.dat| tr '-' '0' | awk -F ';' '$2 != 0 && $3 == 0 && $4 == 0' 
+
+#cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 != 0 && $3 == 0 && $4 == 0' | cut -d';' --complement -f3,4,5,6
+
+#si hvb = 0 supp ligne 
+#=> si hva = 0 alor c est hvb 
+#=> si hva != 0 alor c est hva
+
+#si hva != 0 alor garder ligne
+#si hvb = 0 supp ligne
+#=> si lv = 0 alor c est hva
+#=> si hva != 0 alor c est lv
+
+#si lv != 0 alor garder 
+
+
+echo "hvb ? hva ? lv ?"
 read choix
 
 case "$choix" in
   'hvb')
-    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 != 0 && $3 == 0 && $4 == 0 ' | cut -d';' --complement -f1,3,4,5,6
+    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 != 0 && $3 == 0 && $4 == 0 ' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main
     ;;
   'hva')
-    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 == 0 && $3 != 0 && $4 == 0' | cut -d';' --complement -f1,2,4,5,6
+    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 == 0 && $3 != 0 && $4 == 0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1 | ./main
     ;;
   'lv')
-    cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 > main
+    cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main
     ;;
   *)
     echo "Choix invalide"
     ;;
 esac
 
-# Génération du fichier de sortie
-output_file="filtered_data.csv"
-echo "Capacity,Company,Individual,Load" > "$output_file"
-awk -F';' "{ if ($awk_command) printf \"%s,%s,%s,%s\\n\", \$7, \$5, \$6, \$8 }" "$input_file" >> "$output_file"
-
 # Exécution de l'exécutable C
 ./$c_executable "$output_file"
+
+# Génération du fichier de sortie
+#output_file="filtered_data.csv"
+#echo "Capacity,Company,Individual,Load" > "$output_file"
+#awk -F';' "{ if ($awk_command) printf \"%s,%s,%s,%s\\n\", \$7, \$5, \$6, \$8 }" "$input_file" >> "$output_file"
 
 # Fin de la mesure du temps de traitement
 end_time=$(date +%s.%N)
