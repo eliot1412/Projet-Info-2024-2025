@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+FILE* fichier = NULL;
+    
 typedef struct _tree{
     int id;
     int capacity;
@@ -169,10 +171,10 @@ Tree* insertAVL(Tree* a, int i,int c,int l,int* h) {
 }
 
 
-char infix(Tree* p){
+void infix(Tree* p){
     if(p!=NULL){
         infix(p->pLeft);
-        return ("%02d:%02d:%02d\n", p->id, p->capacity, p->load);
+        printf("%02d:%02d:%02d\n", p->id, p->capacity, p->load);
         infix(p->pRight);
     }
 }
@@ -185,9 +187,13 @@ void prefix(Tree* p){
     }
 }
 
-
-
-
+void infixfile(Tree* p,FILE* fichier){
+    if(p!=NULL){
+        infix(p->pLeft);
+        fprintf(fichier,"%d %d %d\n", p->id, p->capacity, p->load);
+        infix(p->pRight);
+    }
+}
 
 int main(){
 	int h;
@@ -200,17 +206,20 @@ int main(){
 			AVLproj = insertAVL(AVLproj,v1,v2,v3,pH);
 		
 	}
-	FILE* fichier = fopen("output.csv", "w"); // Ouvre le fichier en mode écriture ("w")
+	
+	FILE* fichier = fopen("output.csv", "w");
     if (fichier == NULL) {
         printf("Erreur d'ouverture du fichier");
         exit(5);
         return 1;
     }
-
-    fprintf(fichier, infix(AVLproj));
+	
+    
+    infix(AVLproj);
+    infixfile(AVLproj,fichier);
+    
 
     fclose(fichier); // Fermer le fichier après utilisation
-    return 0;
 
 
 return 0;
