@@ -1,5 +1,7 @@
 #!/bin/bash
 
+awk -F';' '$2 < 2' c-wire_v00.dat | tr '-' 0
+
 sort : Trier les lignes d’un fichier.
 
     Trier par ordre alphabétique (par défaut) :
