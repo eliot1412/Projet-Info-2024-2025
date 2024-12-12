@@ -83,6 +83,24 @@ else
   echo "Le dossier 'graphs' existe déjà."
 fi
 
+echo "HVB ? HVA ? LV ?"
+read choix
+
+case "$choix" in
+  'hvb')
+    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 != 0 && $3 == 0 && $4 == 0 ' | cut -d';' --complement -f1,3,4,5,6
+    ;;
+  'hva')
+    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 == 0 && $3 != 0 && $4 == 0' | cut -d';' --complement -f1,2,4,5,6
+    ;;
+  'lv')
+    cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 > main
+    ;;
+  *)
+    echo "Choix invalide"
+    ;;
+esac
+
 # Génération du fichier de sortie
 output_file="filtered_data.csv"
 echo "Capacity,Company,Individual,Load" > "$output_file"
