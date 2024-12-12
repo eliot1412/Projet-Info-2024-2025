@@ -1,0 +1,98 @@
+#!/bin/bash
+
+sort : Trier les lignes d’un fichier.
+
+    Trier par ordre alphabétique (par défaut) :
+
+sort fichier.txt
+
+Trier par ordre numérique :
+
+sort -n fichier.txt
+
+Trier par une colonne spécifique :
+
+sort -t';' -k2 fichier.csv  # Trier par la 2e colonne (séparateur `;`)
+
+Trier en ordre décroissant :
+
+sort -r fichier.txt
+
+Extraire la 2e colonne (par séparateur par défaut : tabulation) :
+
+cut -f2 fichier.txt
+
+Extraire des colonnes avec un séparateur spécifique (;) :
+
+    cut -d';' -f1,3 fichier.csv
+
+awk : Manipuler et extraire des colonnes ou appliquer des conditions.
+
+    Extraire la 2e colonne :
+
+awk -F';' '{print $2}' fichier.csv
+
+Extraire des colonnes sous condition (par exemple, valeur > 100 dans la 3e colonne) :
+
+    awk -F';' '$3 > 100 {print $1, $2, $3}' fichier.csv
+
+grep : Filtrer des lignes contenant des mots ou motifs spécifiques.
+
+    Lignes contenant le mot "hvb" :
+
+grep "hvb" fichier.txt
+
+Lignes ne contenant pas "hvb" :
+
+grep -v "hvb" fichier.txt
+
+Modifier ou supprimer des lignes.
+
+    Supprimer les lignes contenant un motif :
+
+sed '/motif/d' fichier.txt
+
+Supprimer la 1ère ligne (souvent un en-tête) :
+
+sed '1d' fichier.txt
+
+Afficher uniquement les lignes correspondant à un motif :
+
+sed -n '/motif/p' fichier.txt
+
+Afficher les 10 premières lignes (par défaut) :
+
+head fichier.txt
+
+Afficher les 5 dernières lignes :
+
+    tail -n 5 fichier.txt
+
+uniq : Supprimer les doublons.
+
+    Supprimer les lignes dupliquées (nécessite un tri préalable) :
+
+sort fichier.txt | uniq
+
+4. Commandes combinées pour tri avancé
+Trier et extraire des colonnes spécifiques :
+
+    Trier par la 3e colonne, puis extraire les colonnes 1 et 3 :
+
+    sort -t';' -k3 fichier.csv | cut -d';' -f1,3
+
+Trier et filtrer par une valeur seuil :
+
+    Trier par capacité et afficher uniquement les lignes où la capacité est > 1000 :
+
+awk -F';' '$7 > 1000' fichier.csv | sort -t';' -k7,7nr
+
+Transformer ou supprimer des caractères.
+
+    Remplacer des points-virgules par des virgules :
+
+tr ';' ',' < fichier.csv > fichier_modifie.csv
+
+Supprimer tous les caractères numériques :
+
+tr -d '0-9' < fichier.txt
