@@ -41,6 +41,7 @@ if { [ "$type_station" = "hvb" ] || [ "$type_station" = "hva" ]; } && { [ "$type
     exit 1
 fi
 
+
 # Vérification de l'exécutable C
 c_executable="main"
 c_source="main.c"
@@ -108,21 +109,18 @@ read choix
 
 case "$choix" in
   'hvb')
-    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 != 0 && $3 == 0 && $4 == 0 ' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main
+    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 != 0 && $3 == 0 && $4 == 0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main
     ;;
   'hva')
-    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$2 == 0 && $3 != 0 && $4 == 0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1 | ./main
+    cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$3 != 0 && $4 == 0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main
     ;;
   'lv')
-    cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main
+    cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+2 | ./main
     ;;
   *)
     echo "Choix invalide"
     ;;
 esac
-
-# Exécution de l'exécutable C
-./$c_executable "$output_file"
 
 # Génération du fichier de sortie
 #output_file="filtered_data.csv"
