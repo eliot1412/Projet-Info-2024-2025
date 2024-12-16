@@ -114,7 +114,7 @@ case "$type_station $type_consommateur" in
     ;;
   'hva comp')
     output_file="hva_comp.csv" # Fichier de sortie
-    echo "HVA ID ; Capacity in kWh ; Consumption Company in kWh" > "$output_file"
+    echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v00.dat | tr '-' '0' | awk -F';' '$3 != 0 && $4 == 0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$output_file"
     # Vérification de la création du fichier
     if [ -f "$output_file" ]; then
@@ -125,7 +125,7 @@ case "$type_station $type_consommateur" in
     ;;
     'lv indiv')
     output_file="lv_indiv.csv" # Fichier de sortie
-     echo "LV ID ; Capacity in kWh ; Consumption Individuals in kWh" > "$output_file"
+     echo "LV ID:Capacity in kWh:Consumption Individuals in kWh" > "$output_file"
     cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0 && $5 == 0 && $6 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
     #cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp.csv 
     paste -d';' <(cut -d';' -f1 temp1.csv) <(cut -d';' --complement -f2 lv_indiv.csv) > lv_indiv2.csv
@@ -143,7 +143,7 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
     ;;
     'lv comp')
     output_file="lv_comp.csv" # Fichier de sortie
-     echo "LV ID ; Capacity in kWh ; Consumption Company in kWh" > "$output_file"
+     echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0 && $5 != 0 && $6 == 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
     #
     paste -d';' <(cut -d';' -f1 temp1.csv) <(cut -d';' --complement -f2 lv_comp.csv) > lv_comp2.csv
@@ -161,7 +161,7 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
     ;;
     'lv all')
     output_file="lv_all.csv" # Fichier de sortie
-     echo "LV ID ; Capacity in kWh ; Consumption Company in kWh" > "$output_file"
+     echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+2 | ./main >> "$output_file"
     # Vérification de la création du fichier
     if [ -f "$output_file" ]; then
@@ -170,7 +170,7 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
         echo "Erreur : Fichier non généré."
     fi
     minmax_file="lv_all_minmax.csv"
-    echo "LV ID ; Capacity in kWh ; Consumption Company in kWh" > "$minmax_file"
+    echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$minmax_file"
     # Traitement pour générer lv_all_minmax.csv
     sort -t';' -k3 -n "$output_file" | tail -n +2 | head -10 >> "$minmax_file" # Les 10 plus petites consommations
     sort -t';' -k3 -nr "$output_file" | tail -n +2 | head -10 >> "$minmax_file" # Les 10 plus grandes consommations
