@@ -128,18 +128,11 @@ case "$type_station $type_consommateur" in
     fi
     ;;
     'lv indiv')
+    #1;-;1;1;-;-;241999040;-
     output_file="lv_indiv.csv" # Fichier de sortie
      echo "LV ID:Capacity in kWh:Consumption Individuals in kWh" > "$output_file"
-    cat c-wire_v25.dat | tr '-' 0 |awk -F';' '$4 != 0 && $5 == 0 && $6 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
-    #cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp.csv 
-    paste -d';' <(cut -d';' -f1 temp1.csv) <(cut -d';' --complement -f2 lv_indiv.csv) > lv_indiv2.csv
-    awk -F';' -v OFS=';' '{tmp=$1; $1=$2; $2=tmp; print}' lv_indiv2.csv > lv_indiv3.csv
-   awk -F';' -v OFS=';' -v mot="Capacity in kWh" '
-NR == 1 { prev = $2; $2 = mot; print }  # Remplace la première ligne de la colonne 2 par "mot"
-NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
-' lv_indiv3.csv > lv_indiv.csv
+    cat c-wire_v00.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
     # Vérification de la création du fichier
-    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
