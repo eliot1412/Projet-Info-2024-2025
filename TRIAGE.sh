@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9-]+;[0-9-]+;[0-9]+;-;[0-9]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
-
 # Vérification du nombre d'arguments
 if [ "$#" -lt 3 ]; then
     echo "Usage: $0 <chemin_fichier> <type_station> <type_consommateur> [id_centrale]"
@@ -99,16 +97,15 @@ fi
 #si lv != 0 alor garder 
 
 # Ajouter un en-tête au fichier CSV
-#cat $inputfile | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp1.csv 
+cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp1.csv 
 
 
 case "$type_station $type_consommateur" in
   'hvb comp')
     output_file="hvb_comp.csv" # Fichier de sortie
     echo "HVB ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
-    cat c-wire_v25.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$output_file"
+    cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$output_file"
     # Vérification de la création du fichier
-    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -120,7 +117,6 @@ case "$type_station $type_consommateur" in
     echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$output_file"
     # Vérification de la création du fichier
-    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -142,16 +138,8 @@ case "$type_station $type_consommateur" in
     'lv comp')
     output_file="lv_comp.csv" # Fichier de sortie
      echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
-    cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0 && $5 != 0 && $6 == 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
-    #
-    paste -d';' <(cut -d';' -f1 temp1.csv) <(cut -d';' --complement -f2 lv_comp.csv) > lv_comp2.csv
-    awk -F';' -v OFS=';' '{tmp=$1; $1=$2; $2=tmp; print}' lv_comp2.csv > lv_comp3.csv
-   awk -F';' -v OFS=';' -v mot="Capacity in kWh" '
-NR == 1 { prev = $2; $2 = mot; print }  # Remplace la première ligne de la colonne 2 par "mot"
-NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
-' lv_comp3.csv > lv_comp.csv
+    cat c-wire_v00.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
     # Vérification de la création du fichier
-    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -161,9 +149,8 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
     'lv all')
     output_file="lv_all.csv" # Fichier de sortie
      echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
-    cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+2 | ./main >> "$output_file"
+    cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+2 | ./main >> "$output_file"
     # Vérification de la création du fichier
-    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Nice"
     else
@@ -175,7 +162,6 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
     sort -t';' -k3 -n "$output_file" | tail -n +2 | head -10 >> "$minmax_file" # Les 10 plus petites consommations
     sort -t';' -k3 -nr "$output_file" | tail -n +2 | head -10 >> "$minmax_file" # Les 10 plus grandes consommations
  # Vérification de la création du fichier minmax
-    sort -k2 -t';' -n "$minmax_file" 
         if [ -f "$minmax_file" ]; then
             echo "Fichier min/max généré avec succès : $minmax_file"
         else
