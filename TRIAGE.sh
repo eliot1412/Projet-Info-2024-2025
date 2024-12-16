@@ -106,6 +106,7 @@ case "$type_station $type_consommateur" in
     echo "HVB ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v25.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$output_file"
     # Vérification de la création du fichier
+    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -117,6 +118,7 @@ case "$type_station $type_consommateur" in
     echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$output_file"
     # Vérification de la création du fichier
+    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -135,6 +137,7 @@ NR == 1 { prev = $2; $2 = mot; print }  # Remplace la première ligne de la colo
 NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
 ' lv_indiv3.csv > lv_indiv.csv
     # Vérification de la création du fichier
+    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -153,6 +156,7 @@ NR == 1 { prev = $2; $2 = mot; print }  # Remplace la première ligne de la colo
 NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
 ' lv_comp3.csv > lv_comp.csv
     # Vérification de la création du fichier
+    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
     else
@@ -164,6 +168,7 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
      echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$output_file"
     cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+2 | ./main >> "$output_file"
     # Vérification de la création du fichier
+    sort -k2 -t';' -n "$output_file" 
     if [ -f "$output_file" ]; then
         echo "Nice"
     else
@@ -175,6 +180,7 @@ NR > 1  { tmp = $2; $2 = prev; prev = tmp; print }  # Décale la colonne 2
     sort -t';' -k3 -n "$output_file" | tail -n +2 | head -10 >> "$minmax_file" # Les 10 plus petites consommations
     sort -t';' -k3 -nr "$output_file" | tail -n +2 | head -10 >> "$minmax_file" # Les 10 plus grandes consommations
  # Vérification de la création du fichier minmax
+    sort -k2 -t';' -n "$minmax_file" 
         if [ -f "$minmax_file" ]; then
             echo "Fichier min/max généré avec succès : $minmax_file"
         else
@@ -203,3 +209,5 @@ echo "Temps utile de traitement : ${elapsed_time}sec"
 
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $output_file."
+
+sort -k2 -t';' -n "$output_file" 
