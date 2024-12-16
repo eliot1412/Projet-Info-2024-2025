@@ -154,7 +154,7 @@ Tree *insertAVL(Tree *a, long long i, long long c, long long l, int *h) {
 void infix(Tree *p) {
   if (p != NULL) {
     infix(p->pLeft);
-    printf("%02lld ; %02lld ; %02lld\n", p->id, p->capacity, p->load);
+    printf("%02lld:%02lld:%02lld\n", p->id, p->capacity, p->load);
     infix(p->pRight);
   }
 }
