@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9-]+;[0-9-]+;[0-9]+;-;[0-9]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$output_file"
+
 # Vérification du nombre d'arguments
 if [ "$#" -lt 3 ]; then
     echo "Usage: $0 <chemin_fichier> <type_station> <type_consommateur> [id_centrale]"
