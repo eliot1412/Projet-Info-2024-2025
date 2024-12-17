@@ -36,7 +36,7 @@ fi
 
 
 # Vérification de l'exécutable C
-c_executable="main3"
+c_executable="arbre_avl"
 c_source="main3.c"
 
 # Vérifier si l'exécutable existe
