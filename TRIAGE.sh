@@ -13,6 +13,11 @@ type_station="$2"
 type_consommateur="$3"
 id_centrale="${4:-}"  # Optionnel
 
+if { [ "$input_file" = "-h" ] || [ "$type_station" = "-h" ] || [ "$type_consommateur" = "-h" ] || [ "$id_centrale" = "-h" ] }; then
+    echo "aide"
+    exit 1
+fi
+
 # Vérification de l'existence du fichier
 if [ ! -f "$input_file" ]; then
     echo "Erreur : Le fichier $input_file n'existe pas."
