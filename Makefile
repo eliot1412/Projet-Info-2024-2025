@@ -29,4 +29,3 @@ utils.o: utilis.c utilis.h
 clean:
 	rm -f $(OBJ) $(EXEC)
 	@echo "Nettoyage terminé."
-
