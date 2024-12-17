@@ -22,7 +22,7 @@ avl_tree.o: avl_tree.c avl_tree.h
 	$(CC) $(CFLAGS) -c avl_tree.c
 
 # Règle pour compiler utilis.o
-utils.o: utilis.c utilis.h
+utilis.o: utilis.c utilis.h
 	$(CC) $(CFLAGS) -c utilis.c
 
 # Nettoyer les fichiers objets et l'exécutable
