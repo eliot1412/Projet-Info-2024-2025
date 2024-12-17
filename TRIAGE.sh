@@ -97,7 +97,7 @@ fi
 #si lv != 0 alor garder 
 
 # Ajouter un en-tête au fichier CSV
-cat c-wire_v00.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp1.csv 
+#cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp1.csv 
 
 
 case "$type_station $type_consommateur" in
@@ -105,7 +105,7 @@ case "$type_station $type_consommateur" in
     output_file="hvb_comp.csv" # Fichier de sortie
     file="hvb_comp2.csv"
     echo "HVB ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$file"
+    cat c-wire_v25.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -118,7 +118,7 @@ case "$type_station $type_consommateur" in
     output_file="hva_comp.csv" # Fichier de sortie
     file="hva_comp2.csv"
     echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
+    cat c-wire_v25.dat | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -132,7 +132,7 @@ case "$type_station $type_consommateur" in
     output_file="lv_indiv.csv" # Fichier de sortie
     file="lv_indiv2.csv"
      echo "LV ID:Capacity in kWh:Consumption Individuals in kWh" > "$file"
-    cat c-wire_v00.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
+    cat c-wire_v25.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -145,7 +145,7 @@ case "$type_station $type_consommateur" in
     output_file="lv_comp.csv" # Fichier de sortie
     file="lv_comp2.csv"
      echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v00.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
+    cat c-wire_v25.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
