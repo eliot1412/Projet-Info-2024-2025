@@ -10,6 +10,11 @@ type_consommateur="$3"
 id_centrale="${4:-}"  # Optionnel
 aide_optionnel="${5:-}"
 
+#limiter nombre d arguments si apres 5eme argument different de -h exit
+#if [ $# -gt 5 ]; then
+
+
+#permet d'utiliser la commande  d'aide
 if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
     echo "aide"
     
@@ -49,12 +54,15 @@ fi
 c_executable="arbre_avl"
 c_source="main3.c"
 
+CHEMIN_PROJET=~/PROJET-INFO-PRE-ING-2/codeC
+
 # Vérifier si l'exécutable existe
   if [ ! -f "$c_executable" ]; then
         echo "L'exécutable '$c_executable' n'existe pas. Compilation en cours..."
 
         # Lancer la compilation avec make
-        make
+       # make -f ~/PROJET-INFO-PRE-ING-2/codeC/Makefile
+        make -C "$CHEMIN_PROJET"
         if [ $? -ne 0 ]; then
             # Si la compilation échoue
             echo "Erreur lors de la compilation. Le programme n'a pas pu être généré."
@@ -73,8 +81,22 @@ c_source="main3.c"
 start_time=$(date +%s.%N)
 # il faudra la fonction et la mettre a la fin pour mesurer le temps de traitement a la fin
 
-# Verfifier la presence du dossier tmp et graphs
+# Verfifier la presence du dossier tmp et graphs et test
 
+if [ ! -d "input" ]; then
+  mkdir input
+  echo "Le dossier 'input' a été créé."
+else
+  echo "Le dossier 'input' existe déjà."
+fi
+
+
+if [ ! -d "tests" ]; then
+  mkdir tests
+  echo "Le dossier 'tests' a été créé."
+else
+  echo "Le dossier 'tests' existe déjà."
+fi
 
 if [ ! -d "tmp" ]; then
   mkdir tmp
@@ -119,12 +141,14 @@ fi
       combined_type="$type_station $type_consommateur $id_centrale"  # Sinon, on inclut $id_centrale dans la combinaison.
   fi
 
+EXECUTABLE=~/PROJET-INFO-PRE-ING-2/codeC/$c_executable
+
 case "$combined_type" in
   "hvb comp $id_centrale")
     output_file="hvb_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
     file="hvb_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "Station HVB:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^$id_centrale;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./$c_executable >> "$file"
+    cat $1 | grep -E "^$id_centrale;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -137,7 +161,7 @@ case "$combined_type" in
     output_file="hva_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
     file="hva_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "Station HVA:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./$c_executable >> "$file"
+    cat $1 | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -150,7 +174,7 @@ case "$combined_type" in
     output_file="lv_indiv_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
     file="lv_indiv_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "Station LV:Capacité:Consommation (particuliers)" > "$file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./$c_executable >> "$file"
+    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -163,7 +187,7 @@ case "$combined_type" in
     output_file="lv_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
     file="lv_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "Station LV:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./$c_executable >> "$file"
+    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -175,7 +199,7 @@ case "$combined_type" in
     "lv all $id_centrale")
     file="lv_all_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "Station LV:Capacité:Consommation (tous)" > "$file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1  | ./$c_executable >> "$file"
+    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -198,7 +222,7 @@ case "$combined_type" in
     output_file="hvb_comp.csv" # Fichier de sortie
     file="hvb_comp2.csv"
     echo "Station HVA:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./$c_executable >> "$file"
+    cat $1 | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -206,13 +230,12 @@ case "$combined_type" in
         echo "Erreur : Fichier non généré."
     fi
     sort -t ':' -k2 -n "$file" > "$output_file"
-    mv /main/tmp
     ;;
   'hva comp')
     output_file="hva_comp.csv" # Fichier de sortie
     file="hva_comp2.csv"
     echo "Station HVA:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./$c_executable >> "$file"
+    cat $1 | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -226,7 +249,7 @@ case "$combined_type" in
     output_file="lv_indiv.csv" # Fichier de sortie
     file="lv_indiv2.csv"
      echo "Station LV:Capacité:Consommation (particuliers)" > "$file"
-    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./$c_executable >> "$file"
+    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -239,7 +262,7 @@ case "$combined_type" in
     output_file="lv_comp.csv" # Fichier de sortie
     file="lv_comp2.csv"
      echo "Station LV:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./$c_executable >> "$file"
+    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -251,7 +274,7 @@ case "$combined_type" in
     'lv all')
     output_file="lv_all.csv" # Fichier de sortie
      echo "Station LV:Capacité:Consommation (tous)" > "$output_file"
-     cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./$c_executable >> "$output_file"
+     cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
     # Vérification de la création du fichier
     if [ -f "$output_file" ]; then
         echo "Nice"
@@ -275,8 +298,6 @@ case "$combined_type" in
     exit 1
     ;;
 esac
-
-''
 
 #GENERATION FICHIER DE SORTIE
 #output_file="filtered_data.csv"
