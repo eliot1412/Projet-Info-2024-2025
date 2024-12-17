@@ -1,7 +1,8 @@
+# Variables de compilation
 CC = gcc
 CFLAGS = -Wall -Werror -g
 
-# Les fichiers objets
+# Fichiers objets
 OBJ = main3.o avl_tree.o utils.o
 
 # Nom de l'exécutable
@@ -10,6 +11,7 @@ EXEC = arbre_avl
 # Règle de compilation de l'exécutable
 $(EXEC): $(OBJ)
 	$(CC) $(CFLAGS) -o $(EXEC) $(OBJ)
+	@echo "Compilation terminée."
 
 # Règle pour compiler main3.o
 main3.o: main3.c avl_tree.h utils.h
@@ -26,3 +28,9 @@ utils.o: utils.c utils.h
 # Nettoyer les fichiers objets et l'exécutable
 clean:
 	rm -f $(OBJ) $(EXEC)
+	@echo "Nettoyage terminé."
+
+# Règle pour compiler, exécuter le script Shell et ensuite lancer le programme
+build_and_run: $(EXEC) generate_data
+	@echo "Compilation et exécution du programme après génération des données..."
+	./$(EXEC)  # Lancer l'exécutable après avoir exécuté le script Shell
