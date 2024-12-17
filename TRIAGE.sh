@@ -36,25 +36,28 @@ fi
 
 
 # Vérification de l'exécutable C
-c_executable="main"
-c_source="main.c"
+c_executable="main3"
+c_source="main3.c"
 
-if [ ! -f "$c_executable" ]; then
-    echo "L'exécutable C n'est pas présent. Compilation en cours..."
-    if [ ! -f "$c_source" ]; then
-        echo "Erreur : Le fichier source $c_source est introuvable."
-        echo "Temps utile de traitement : 0.0sec"
-        exit 1
-    fi
+# Vérifier si l'exécutable existe
+	if [ ! -f "$c_executable" ]; then
+    		echo "L'exécutable '$c_executable' n'existe pas. Compilation en cours..."
 
-    gcc -o "$c_executable" "$c_source"
-    if [ $? -ne 0 ]; then
-        echo "Erreur : La compilation a échoué."
-        echo "Temps utile de traitement : 0.0sec"
-        exit 1
-    fi
-    echo "Compilation réussie."
-fi
+    		# Lancer la compilation avec make
+    		make
+    		if [ $? -ne 0 ]; then
+        		# Si la compilation échoue
+        		echo "Erreur lors de la compilation. Le programme n'a pas pu être généré."
+        		echo "Temps d'execution : 0.0sec"
+        		exit 1
+    		else
+        	echo "Compilation réussie."
+    		fi
+	else
+    		echo "L'exécutable '$c_executable' est déjà présent."
+	fi
+    	echo "Compilation réussie."
+	fi
 
 # Début de la mesure du temps de traitement
 start_time=$(date +%s.%N)
