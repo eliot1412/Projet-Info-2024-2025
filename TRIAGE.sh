@@ -164,7 +164,7 @@ case "$combined_type" in
     output_file="lv_all${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
     file="lv_all_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v00.dat | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
+    cat c-wire_v00.dat | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1  | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -270,7 +270,5 @@ echo "Temps utile de traitement : ${elapsed_time}sec"
 
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $output_file."
-
-#sort -k2 -t';' -n "$output_file" 
 
 #sort -k2 -t';' -n "$output_file" 
