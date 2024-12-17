@@ -99,13 +99,85 @@ fi
 # Ajouter un en-tête au fichier CSV
 #cat c-wire_v25.dat | tr '-' 0 | awk -F';' '$4 != 0'  | cut -d';' --complement -f1,2,3,4,5,6,8 | awk -F';' '$1 != 0' | tail -n+2 > temp1.csv 
 
-
-case "$type_station $type_consommateur" in
+# Vérification de l'existence de $id_centrale et création de la variable combinée
+	if [ -z "$id_centrale" ]; then
+  		combined_type="$type_station $type_consommateur"  # Si id_centrale n'est pas fourni, on n'inclut pas $id_centrale.
+	else
+  		combined_type="$type_station $type_consommateur $id_centrale"  # Sinon, on inclut $id_centrale dans la combinaison.
+	fi
+	
+	
+case "$combined_type" in
+  "hvb comp $id_centrale")
+    output_file="hvb_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
+    file="hvb_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
+    echo "HVB ID:Capacity in kWh:Consumption Company in kWh" > "$file"
+    cat c-wire_v00.dat | grep -E "^$id_centrale;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$file"
+    # Vérification de la création du fichier
+    if [ -f "$file" ]; then
+        echo "Fichier généré avec succès : $file"
+    else
+        echo "Erreur : Fichier non généré."
+    fi
+    sort -t ':' -k2 -n "$file" > "$output_file"
+    ;;
+  "hva comp $id_centrale")
+    output_file="hva_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
+    file="hva_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
+    echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
+    cat c-wire_v00.dat | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
+    # Vérification de la création du fichier
+    if [ -f "$file" ]; then
+        echo "Fichier généré avec succès : $file"
+    else
+        echo "Erreur : Fichier non généré."
+    fi
+    sort -t ':' -k2 -n "$file" > "$output_file"
+    ;;
+    "lv indiv $id_centrale")
+    output_file="lv_indiv_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
+    file="lv_indiv_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
+    echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
+    cat c-wire_v00.dat | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
+    # Vérification de la création du fichier
+    if [ -f "$file" ]; then
+        echo "Fichier généré avec succès : $file"
+    else
+        echo "Erreur : Fichier non généré."
+    fi
+    sort -t ':' -k2 -n "$file" > "$output_file"
+    ;;
+    "lv comp $id_centrale")
+    output_file="lv_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
+    file="lv_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
+    echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
+    cat c-wire_v00.dat | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
+    # Vérification de la création du fichier
+    if [ -f "$file" ]; then
+        echo "Fichier généré avec succès : $file"
+    else
+        echo "Erreur : Fichier non généré."
+    fi
+    sort -t ':' -k2 -n "$file" > "$output_file"
+    ;;
+    "lv all $id_centrale")
+    output_file="lv_all${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
+    file="lv_all_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
+    echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
+    cat c-wire_v00.dat | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
+    # Vérification de la création du fichier
+    if [ -f "$file" ]; then
+        echo "Fichier généré avec succès : $file"
+    else
+        echo "Erreur : Fichier non généré."
+    fi
+    sort -t ':' -k2 -n "$file" > "$output_file"
+    ;;
   'hvb comp')
     output_file="hvb_comp.csv" # Fichier de sortie
     file="hvb_comp2.csv"
     echo "HVB ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v25.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$file"
+    cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -118,7 +190,7 @@ case "$type_station $type_consommateur" in
     output_file="hva_comp.csv" # Fichier de sortie
     file="hva_comp2.csv"
     echo "HVA ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v25.dat | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
+    cat c-wire_v00.dat | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -132,7 +204,7 @@ case "$type_station $type_consommateur" in
     output_file="lv_indiv.csv" # Fichier de sortie
     file="lv_indiv2.csv"
      echo "LV ID:Capacity in kWh:Consumption Individuals in kWh" > "$file"
-    cat c-wire_v25.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
+    cat c-wire_v00.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -145,7 +217,7 @@ case "$type_station $type_consommateur" in
     output_file="lv_comp.csv" # Fichier de sortie
     file="lv_comp2.csv"
      echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$file"
-    cat c-wire_v25.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
+    cat c-wire_v00.dat | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | ./main >> "$file"
     # Vérification de la création du fichier
     if [ -f "$file" ]; then
         echo "Fichier généré avec succès : $file"
@@ -169,7 +241,7 @@ case "$type_station $type_consommateur" in
     #Traitement pour générer lv_all_minmax.csv
     sort -t':' -k3 -nr "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus grandes consommations
     sort -t':' -k3 -n "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus petites consommations
- # Vérification de la création du fichier minmax
+   #Vérification de la création du fichier minmax
         if [ -f "$minmax_file" ]; then
             echo "Fichier min/max généré avec succès : $minmax_file"
         else
@@ -177,7 +249,7 @@ case "$type_station $type_consommateur" in
     fi
     ;;
   *)
-    echo "Choix invalide, le type de station doit être hva, hvb ou lv"
+    echo "Choix invalide, les arguments possibles sont hva comp, hvb comp, lv indiv, lv comp ou lv all"
     exit 1
     ;;
 esac
@@ -198,5 +270,7 @@ echo "Temps utile de traitement : ${elapsed_time}sec"
 
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $output_file."
+
+#sort -k2 -t';' -n "$output_file" 
 
 #sort -k2 -t';' -n "$output_file" 
