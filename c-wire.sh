@@ -296,8 +296,9 @@ case "$combined_type" in
     minmax_file="lv_all_minmax.csv"
     echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$minmax_file"
     #Traitement pour générer lv_all_minmax.csv
-    sort -t':' -k3 -nr "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus grandes consommations
+    sort -t':' -k3 -nr "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # théorie : les sort sont pas bons : theorie 2 : le prof a fait dans l'autre sens
     sort -t':' -k3 -n "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus petites consommations
+    #cat "$minmax_file" | tail -n +2 | awk -F':' '{printf "%d:%d:%d:%d\n", $1, $2, $3, ($2 - $3)}' | sort -t':' -k4 -n 
    #Vérification de la création du fichier minmax
         if [ -f "$minmax_file" ]; then
             echo "Fichier min/max généré avec succès : $minmax_file"
