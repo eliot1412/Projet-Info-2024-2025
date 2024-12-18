@@ -48,7 +48,7 @@ if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" 
 fi
 
 if [ "$#" -lt 3 ]; then
-    echo "Usage: $0 <chemin_fichier> <type_station> <type_consommateur> [id_centrale]"
+    afficher_aide
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
@@ -56,6 +56,7 @@ fi
 # Vérification de l'existence du fichier
 if [ ! -f "$input_file" ]; then
     echo "Erreur : Le fichier $input_file n'existe pas."
+    afficher_aide
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
@@ -63,6 +64,7 @@ fi
 # Validation des paramètres de type de station
 if [[ "$type_station" != "hvb" && "$type_station" != "hva" && "$type_station" != "lv" && "$type_consommateur" != "comp" && "$type_consommateur" != "indiv" && "$type_consommateur" != "all" ]]; then
     echo "Erreur : Le type de station doit être 'hvb', 'hva', ou 'lv'. Le type de consommateur doit être 'comp', 'indiv', ou 'all'"
+    afficher_aide
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
@@ -70,6 +72,7 @@ fi
 # Vérification des combinaisons interdites
 if { [ "$type_station" = "hvb" ] || [ "$type_station" = "hva" ]; } && { [ "$type_consommateur" = "all" ] || [ "$type_consommateur" = "indiv" ]; }; then
     echo "Erreur : Les options 'hvb all', 'hvb indiv', 'hva all', et 'hva indiv' sont interdites. Il n'y a que des entreprises connectées aux stations HVB et HVA"
+    afficher_aide
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
