@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Vérification du nombre d'arguments
+# Déplacement des fichiers CSV dans le dossier "test" chatgpt
+target_directory="tests"
+mkdir -p "$target_directory"
+find . -maxdepth 1 -type f -name "*.csv" -exec mv {} "$target_directory/" \;
 
+# Vérification du nombre d'arguments
 
 # Paramètres
 input_file="$1"
@@ -42,7 +46,7 @@ function afficher_aide {
 #permet d'utiliser la commande  d'aide
 if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
     afficher_aide
-    
+
     exit 1
 
 fi
@@ -220,24 +224,42 @@ case "$combined_type" in
     file="lv_all_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
     echo "Station LV:Capacité:Consommation (tous)" > "$file"
     cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
-    # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
-    else
-        echo "Erreur : Fichier non généré."
-    fi
-    minmax_file="lv_all_minmax_${id_centrale}.csv"
+    
+    # Traitement pour extraire les 10 postes avec la plus forte et la plus faible consommation
+    minmax_file="tmp_${id_centrale}.csv" # Nom du fichier de temporaire minmax avec 10 plus petite et 10 plus grande
+
+    # Ajouter un en-tête au fichier de sortie
     echo "Station LV:Capacité:Consommation (tous)" > "$minmax_file"
-    #Traitement pour générer lv_all_minmax.csv
-    sort -t':' -k3 -nr "$file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus grandes consommations
-    sort -t':' -k3 -n "$file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus petites consommations
-   #Vérification de la création du fichier minmax
-        if [ -f "$minmax_file" ]; then
-            echo "Fichier min/max généré avec succès : $minmax_file"
-        else
-            echo "Erreur : Fichier min/max non généré."
+
+    # Trier les postes par consommation, extraire les 10 plus bas et les 10 plus hauts
+    cat "$file" | tail -n +2 | sort -t':' -k3 -n | head -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus faible consommation
+
+    cat "$file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus forte consommation
+
+    # Vérification de la création du fichier min/max
+    if [ -f "$minmax_file" ]; then
+        echo "Fichier temp généré : $minmax_file"
+    else
+        echo "Erreur : Fichier temp non généré."
     fi
-    ;;
+
+     # Création du fichier lv_allminmax.csv avec la colonne 4 calculée
+    temp_file="lv_allminmax_${id_centrale}.csv"
+    echo "Min and Max 'capacity-load' extreme nodes" > "$temp_file"
+    echo "Station LV:Capacité:Consommation (tous)" >> "$temp_file"
+
+    # Utilisation de awk pour ajouter la colonne 4, tri et suppression des doublons
+    awk -F':' 'BEGIN {OFS=":"} {
+        col4 = $2 - $3  # Calcul de la colonne 4
+        print $0, col4   # Affichage de la ligne avec la nouvelle colonne
+    }' "$minmax_file" | tail -n +2 | sort -t':' -k4 -n | awk '!seen[$0]++' | cut -d':' -f1-3 >> "$temp_file"
+    # Vérification de la création du fichier min/max
+    if [ -f "$temp_file" ]; then
+        echo "Fichier minmax généré : $temp_file"
+    else
+        echo "Erreur : Fichier minmax non généré."
+    fi
+        ;;
   'hvb comp')
     output_file="hvb_comp.csv"
     echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
@@ -293,18 +315,34 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
-    minmax_file="lv_all_minmax.csv"
-    echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$minmax_file"
-    #Traitement pour générer lv_all_minmax.csv
-    sort -t':' -k3 -nr "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # théorie : les sort sont pas bons : theorie 2 : le prof a fait dans l'autre sens
-    sort -t':' -k3 -n "$output_file" | tail -n +2 | head -n 10 >> "$minmax_file" # Les 10 plus petites consommations
-    #cat "$minmax_file" | tail -n +2 | awk -F':' '{printf "%d:%d:%d:%d\n", $1, $2, $3, ($2 - $3)}' | sort -t':' -k4 -n 
-   #Vérification de la création du fichier minmax
-        if [ -f "$minmax_file" ]; then
-            echo "Fichier min/max généré avec succès : $minmax_file"
-        else
-            echo "Erreur : Fichier min/max non généré."
-    fi
+# Traitement pour extraire les 10 postes avec la plus forte et la plus faible consommation
+minmax_file="tmp.csv" # Nom du fichier de temporaire minmax avec 10 plus petite et 10 plus grande
+
+# Ajouter un en-tête au fichier de sortie
+echo "Station LV:Capacité:Consommation (tous)" > "$minmax_file"
+
+# Trier les postes par consommation, extraire les 10 plus bas et les 10 plus hauts
+cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | head -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus faible consommation
+
+cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus forte consommation
+
+# Vérification de la création du fichier min/max
+if [ -f "$minmax_file" ]; then
+    echo "Fichier min/max généré : $minmax_file"
+else
+    echo "Erreur : Fichier min/max non généré."
+fi
+
+ # Création du fichier lv_allminmax.csv avec la colonne 4 calculée
+temp_file="lv_allminmax.csv"
+echo "Min and Max 'capacity-load' extreme nodes" > "$temp_file"
+echo "Station LV:Capacité:Consommation (tous)" >> "$temp_file"
+
+# Utilisation de awk pour ajouter la colonne 4, tri et suppression des doublons
+awk -F':' 'BEGIN {OFS=":"} {
+    col4 = $2 - $3  # Calcul de la colonne 4
+    print $0, col4   # Affichage de la ligne avec la nouvelle colonne
+}' "$minmax_file" | tail -n +2 | sort -t':' -k4 -n | awk '!seen[$0]++' | cut -d':' -f1-3 >> "$temp_file"
     ;;
   *)
     echo "Choix invalide, les arguments possibles sont hva comp, hvb comp, lv indiv, lv comp ou lv all"
@@ -312,18 +350,9 @@ case "$combined_type" in
     ;;
 esac
 
-# Création du fichier temporaire avec la colonne 4 calculée
-    #temp_file="tmp.csv"
-   # echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$temp_file"
-    
-    # Utilisation de awk pour ajouter la colonne 4, tri et suppression de la colonne 4
-   #awk -F':' 'BEGIN {OFS=":"} 
-#{
- #   col4 = $2 - $3  # Calcul de la colonne 4
-  #  print $0, col4   # Affichage de la ligne avec la nouvelle colonne
-   # echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$temp_file"
-#}' "$output_file" | sort -t':' -k4 -n | cut -d':' -f1-3,5- | head -n 10 > "$temp_file"
-
+mv tmp.csv tmp/
+mv tmp_${id_centrale}.csv tmp/
+#dire dans le read me que l utilisateur doit mettre le fichier de donnes csv dans input
 
 #GENERATION FICHIER DE SORTIE
 #output_file="filtered_data.csv"
@@ -339,5 +368,3 @@ echo "Temps utile de traitement : ${elapsed_time}sec"
 
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $output_file."
-
-#sort -k2 -t';' -n "$output_file"
