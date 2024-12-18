@@ -54,7 +54,7 @@ fi
 c_executable="arbre_avl"
 c_source="main3.c"
 
-CHEMIN_PROJET=~/Projet_Info-2024-2025/codeC
+CHEMIN_PROJET=~/Téléchargements/Projet-Info-2024-2025-main/codeC
 
 # Vérifier si l'exécutable existe
   if [ ! -f "$c_executable" ]; then
@@ -141,7 +141,7 @@ fi
       combined_type="$type_station $type_consommateur $id_centrale"  # Sinon, on inclut $id_centrale dans la combinaison.
   fi
 
-EXECUTABLE=~/Projet-Info-2024-2025/codeC/$c_executable
+EXECUTABLE=~/Téléchargements/Projet-Info-2024-2025-main/codeC/$c_executable
 
 case "$combined_type" in
   "hvb comp $id_centrale")
