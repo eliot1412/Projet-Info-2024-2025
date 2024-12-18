@@ -186,6 +186,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
   "hva comp $id_centrale")
     output_file="hva_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
@@ -197,6 +199,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
     "lv indiv $id_centrale")
     output_file="lv_indiv_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
@@ -208,6 +212,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
     "lv comp $id_centrale")
     output_file="lv_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
@@ -219,6 +225,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
     "lv all $id_centrale")
     file="lv_all_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
@@ -238,7 +246,7 @@ case "$combined_type" in
 
     # Vérification de la création du fichier min/max
     if [ -f "$minmax_file" ]; then
-        echo "Fichier temp généré : $minmax_file"
+        echo "Fichier temp généré : nice"
     else
         echo "Erreur : Fichier temp non généré."
     fi
@@ -259,6 +267,9 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier minmax non généré."
     fi
+    mv tmp_${id_centrale}.csv tmp/
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $temp_file et dans $output_file."
         ;;
   'hvb comp')
     output_file="hvb_comp.csv"
@@ -270,6 +281,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
   'hva comp')
     output_file="hva_comp.csv" # Fichier de sortie
@@ -281,6 +294,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
     'lv indiv')
     #1;-;1;1;-;-;241999040;-
@@ -293,6 +308,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
     'lv comp')
     output_file="lv_comp.csv" # Fichier de sortie
@@ -304,6 +321,8 @@ case "$combined_type" in
     else
         echo "Erreur : Fichier non généré."
     fi
+    # Confirmation
+    echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
     'lv all')
     output_file="lv_all.csv" # Fichier de sortie
@@ -328,7 +347,7 @@ cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_fil
 
 # Vérification de la création du fichier min/max
 if [ -f "$minmax_file" ]; then
-    echo "Fichier min/max généré : $minmax_file"
+    echo "Fichier min/max généré : nice"
 else
     echo "Erreur : Fichier min/max non généré."
 fi
@@ -343,6 +362,15 @@ awk -F':' 'BEGIN {OFS=":"} {
     col4 = $2 - $3  # Calcul de la colonne 4
     print $0, col4   # Affichage de la ligne avec la nouvelle colonne
 }' "$minmax_file" | tail -n +2 | sort -t':' -k4 -n | awk '!seen[$0]++' | cut -d':' -f1-3 >> "$temp_file"
+# Vérification de la création du fichier min/max
+if [ -f "$temp_file" ]; then
+    echo "Fichier min/max généré : $temp_file"
+else
+    echo "Erreur : Fichier min/max non généré."
+fi
+mv tmp.csv tmp/
+# Confirmation
+echo "Traitement terminé. Les résultats sont dans $temp_file et dans $output_file."
     ;;
   *)
     echo "Choix invalide, les arguments possibles sont hva comp, hvb comp, lv indiv, lv comp ou lv all"
@@ -350,8 +378,7 @@ awk -F':' 'BEGIN {OFS=":"} {
     ;;
 esac
 
-mv tmp.csv tmp/
-mv tmp_${id_centrale}.csv tmp/
+
 #dire dans le read me que l utilisateur doit mettre le fichier de donnes csv dans input
 
 #GENERATION FICHIER DE SORTIE
@@ -365,6 +392,3 @@ end_time=$(date +%s.%N)
 # Calcul et affichage de la durée
 elapsed_time=$(echo "$end_time - $start_time" | bc)
 echo "Temps utile de traitement : ${elapsed_time}sec"
-
-# Confirmation
-echo "Traitement terminé. Les résultats sont dans $output_file."
