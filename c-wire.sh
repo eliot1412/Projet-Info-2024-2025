@@ -16,11 +16,31 @@ aide_optionnel="${5:-}"
 
 #permet d'utiliser la commande  d'aide
 if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
-    echo "aide"
-    
-    exit 1
-
-fi
+    function afficher_aide {
+    echo "Usage : $0 <fichier_entrée> <type_station> <type_consommateur> [id_centrale] [-h]"
+    echo ""
+    echo "Ce script permet de traiter les données des stations énergétiques en fonction du type de station,"
+    echo "du type de consommateur et, éventuellement, d'un identifiant de centrale spécifique."
+    echo ""
+    echo "Paramètres :"
+    echo "  <fichier_entrée>      Chemin vers le fichier contenant les données à traiter (obligatoire)."
+    echo "  <type_station>        Type de station ('hvb', 'hva', 'lv')."
+    echo "  <type_consommateur>   Type de consommateur ('comp', 'indiv', 'all')."
+    echo "  [id_centrale]         Identifiant de la centrale (facultatif)."
+    echo "  -h                    Affiche cette aide et quitte le programme."
+    echo ""
+    echo "Exemples :"
+    echo "  $0 donnees.csv hvb comp                Traite les données pour les stations HVB avec des consommateurs entreprises."
+    echo "  $0 donnees.csv lv all                  Traite les données pour toutes les stations LV avec tous les types de consommateurs."
+    echo "  $0 donnees.csv hva comp 1          Traite les données pour la station HVA avec des entreprises connectées à la centrale 1."
+    echo ""
+    echo "Remarques :"
+    echo "  - Les combinaisons d'arguments invalides sont 'hvb all', 'hvb indiv', 'hva all', et 'hva indiv'. Il n'y a que des entreprises connectées aux stations HVB et HVA."
+    echo "  - Les fichiers de sortie générés se trouvent dans le répertoire de travail actuel."
+    echo "  - Si l'exécutable C requis n'existe pas, le script le compile automatiquement."
+    echo "  - Le temps total de traitement est affiché à la fin de l'exécution."
+    echo ""
+}
 
 if [ "$#" -lt 3 ]; then
     echo "Usage: $0 <chemin_fichier> <type_station> <type_consommateur> [id_centrale]"
