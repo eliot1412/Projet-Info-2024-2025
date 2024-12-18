@@ -54,7 +54,7 @@ fi
 c_executable="arbre_avl"
 c_source="main3.c"
 
-CHEMIN_PROJET=~/PROJET-INFO-PRE-ING-2/codeC
+CHEMIN_PROJET=~/sgfr/codeC
 
 # Vérifier si l'exécutable existe
   if [ ! -f "$c_executable" ]; then
@@ -141,60 +141,52 @@ fi
       combined_type="$type_station $type_consommateur $id_centrale"  # Sinon, on inclut $id_centrale dans la combinaison.
   fi
 
-EXECUTABLE=~/PROJET-INFO-PRE-ING-2/codeC/$c_executable
+EXECUTABLE=~/sgfr/codeC/$c_executable
 
 case "$combined_type" in
   "hvb comp $id_centrale")
     output_file="hvb_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
-    file="hvb_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
-    echo "Station HVB:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^$id_centrale;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
+    echo "Station HVB:Capacité:Consommation (entreprises)" > "$output_file"
+    cat $1 | grep -E "^$id_centrale;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
   "hva comp $id_centrale")
     output_file="hva_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
-    file="hva_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
-    echo "Station HVA:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
+    echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
+    cat $1 | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
     "lv indiv $id_centrale")
     output_file="lv_indiv_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
-    file="lv_indiv_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
-    echo "Station LV:Capacité:Consommation (particuliers)" > "$file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
+    echo "Station LV:Capacité:Consommation (particuliers)" > "$output_file"
+    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
     "lv comp $id_centrale")
     output_file="lv_comp_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier de sortie
-    file="lv_comp_${id_centrale}_2.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
-    echo "Station LV:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
+    echo "Station LV:Capacité:Consommation (entreprises)" > "$output_file"
+    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
     "lv all $id_centrale")
     file="lv_all_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
@@ -219,57 +211,49 @@ case "$combined_type" in
     fi
     ;;
   'hvb comp')
-    output_file="hvb_comp.csv" # Fichier de sortie
-    file="hvb_comp2.csv"
-    echo "Station HVA:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
+    output_file="hvb_comp.csv"
+    echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
+    cat $1 | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
   'hva comp')
     output_file="hva_comp.csv" # Fichier de sortie
-    file="hva_comp2.csv"
-    echo "Station HVA:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
+    echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
+    cat $1 | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
     'lv indiv')
     #1;-;1;1;-;-;241999040;-
     output_file="lv_indiv.csv" # Fichier de sortie
-    file="lv_indiv2.csv"
-     echo "Station LV:Capacité:Consommation (particuliers)" > "$file"
-    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
+     echo "Station LV:Capacité:Consommation (particuliers)" > "$output_file"
+    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
     'lv comp')
     output_file="lv_comp.csv" # Fichier de sortie
-    file="lv_comp2.csv"
-     echo "Station LV:Capacité:Consommation (entreprises)" > "$file"
-    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$file"
+     echo "Station LV:Capacité:Consommation (entreprises)" > "$output_file"
+    cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
-    if [ -f "$file" ]; then
-        echo "Fichier généré avec succès : $file"
+    if [ -f "$output_file" ]; then
+        echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
     fi
-    sort -t ':' -k2 -n "$file" > "$output_file"
     ;;
     'lv all')
     output_file="lv_all.csv" # Fichier de sortie
