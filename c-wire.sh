@@ -13,10 +13,7 @@ aide_optionnel="${5:-}"
 #limiter nombre d arguments si apres 5eme argument different de -h exit
 #if [ $# -gt 5 ]; then
 
-
-#permet d'utiliser la commande  d'aide
-if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
-    function afficher_aide {
+function afficher_aide {
     echo "Usage : $0 <fichier_entrée> <type_station> <type_consommateur> [id_centrale] [-h]"
     echo ""
     echo "Ce script permet de traiter les données des stations énergétiques en fonction du type de station,"
@@ -41,6 +38,18 @@ if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" 
     echo "  - Le temps total de traitement est affiché à la fin de l'exécution."
     echo ""
 }
+
+
+
+#permet d'utiliser la commande  d'aide
+if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
+    if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
+    afficher_aide
+
+    exit 1
+
+fi
+
 
 if [ "$#" -lt 3 ]; then
     echo "Usage: $0 <chemin_fichier> <type_station> <type_consommateur> [id_centrale]"
