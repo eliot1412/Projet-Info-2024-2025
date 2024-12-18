@@ -311,6 +311,19 @@ case "$combined_type" in
     ;;
 esac
 
+# Création du fichier temporaire avec la colonne 4 calculée
+    #temp_file="tmp.csv"
+   # echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$temp_file"
+    
+    # Utilisation de awk pour ajouter la colonne 4, tri et suppression de la colonne 4
+   #awk -F':' 'BEGIN {OFS=":"} 
+#{
+ #   col4 = $2 - $3  # Calcul de la colonne 4
+  #  print $0, col4   # Affichage de la ligne avec la nouvelle colonne
+   # echo "LV ID:Capacity in kWh:Consumption Company in kWh" > "$temp_file"
+#}' "$output_file" | sort -t':' -k4 -n | cut -d':' -f1-3,5- | head -n 10 > "$temp_file"
+
+
 #GENERATION FICHIER DE SORTIE
 #output_file="filtered_data.csv"
 #echo "Individual,Capacity,Load" > "$output_file"
