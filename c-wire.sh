@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Déplacement des fichiers CSV dans le dossier "test" chatgpt
-target_directory="tests"
-mkdir -p "$target_directory"
-find . -maxdepth 1 -type f -name "*.csv" -exec mv {} "$target_directory/" \;
+#target_directory="tests"
+#mkdir -p "$target_directory"
+#find . -maxdepth 1 -type f -name "*.csv" -exec mv {} "$target_directory/" \;
+# pas de deplacement vers test car fichier test sert juste a comparer les resultats avec nos resultats a nous. Les test sont nos resultats a nous qu on deja mettre
 
 # Vérification du nombre d'arguments
 
