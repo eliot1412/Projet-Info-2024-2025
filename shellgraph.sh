@@ -95,7 +95,7 @@ if [[ "$type_station" != "hvb" && "$type_station" != "hva" && "$type_station" !=
     exit 1
 fi
 
-# Validation des paramètres de type de station
+# Validation des paramètres de type de consommateur
 if [[ "$type_consommateur" != "indiv" && "$type_consommateur" != "comp" && "$type_consommateur" != "all" ]]; then
     echo "Erreur : Le type de station doit être exactement 'indiv', 'comp' ou 'all'."
     afficher_aide
