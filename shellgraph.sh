@@ -310,7 +310,7 @@ fi
 gnuplot << EOF
 set datafile separator ":"
 set terminal pngcairo enhanced
-set output "graphique_minmax.png"
+set output "graphique_minmax_${id_centrale}.png"
 
 set title "Consommation des 20 postes LV les plus et moins chargés"
 set xlabel "Postes"
@@ -341,6 +341,7 @@ echo "Erreur : Fichier sans différence non généré."
 fi
 mv tmp_${id_centrale}.csv tmp/
 mv lv_all_minmax_difference_${id_centrale}.csv tmp/
+mv graphique_minmax_${id_centrale}.png graph/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $output_file."
     ;;
@@ -479,6 +480,7 @@ else
 fi
 mv tmp.csv tmp/
 mv lv_all_minmax_difference.csv tmp/
+mv graphique_minmax.png graph/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $new_file."
     ;;
