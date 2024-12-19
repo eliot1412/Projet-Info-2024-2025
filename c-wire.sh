@@ -284,7 +284,7 @@ case "$combined_type" in
     fi
 
      # Création du fichier lv_allminmax.csv avec la colonne 4 calculée
-    temp_file="lv_allminmax_${id_centrale}.csv"
+    temp_file="lv_all_minmax_${id_centrale}.csv"
     echo "Min and Max 'capacity-load' extreme nodes" > "$temp_file"
     echo "Station LV:Capacité:Consommation (tous)" >> "$temp_file"
 
@@ -385,7 +385,7 @@ else
 fi
 
  # Création du fichier lv_allminmax.csv avec la colonne 4 calculée
-temp_file="lv_allminmax.csv"
+temp_file="lv_all_minmax.csv"
 echo "Min and Max 'capacity-load' extreme nodes" > "$temp_file"
 echo "Station LV:Capacité:Consommation (tous)" >> "$temp_file"
 
