@@ -31,4 +31,4 @@ Chat gpt : 15% (notamment pour se lancer dans le projet).
 ## Auteurs
 Lucien Boyer
 Eliot Durand de Gevigney
-Marc-Antoine 
+Marc-Antoine Abale
