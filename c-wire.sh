@@ -412,6 +412,22 @@ esac
 
 
 #dire dans le read me que l utilisateur doit mettre le fichier de donnes csv dans input
+# graphs
+
+# sudo apt update
+# sudo apt install gnuplot
+
+# gnuplot
+# set terminal pngcairo size 800,600
+# set output 'graphique_barres.png'
+# set title 'Graphs '
+# set xlabel 'Consommation dans l ordre croissant'
+# set ylabel 'Valeurs de la Consommation'
+# set style data histograms
+# set style fill solid border -1
+# plot "$temp_file" using 2:xtic(1) title 'Série y', \
+#      "$temp_file" using 3:xtic(1) title 'Série z'
+# exit
 
 #GENERATION FICHIER DE SORTIE
 #output_file="filtered_data.csv"
