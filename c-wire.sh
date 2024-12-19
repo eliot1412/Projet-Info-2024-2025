@@ -47,7 +47,6 @@ function afficher_aide {
 #permet d'utiliser la commande  d'aide
 if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
     afficher_aide
-
     exit 1
 
 fi
@@ -89,8 +88,16 @@ if [ ! -f "$input_file" ]; then
 fi
 
 # Validation des paramètres de type de station
-if [[ "$type_station" != "hvb" && "$type_station" != "hva" && "$type_station" != "lv" && "$type_consommateur" != "comp" && "$type_consommateur" != "indiv" && "$type_consommateur" != "all" ]]; then
-    echo "Erreur : Le type de station doit être 'hvb', 'hva', ou 'lv'. Le type de consommateur doit être 'comp', 'indiv', ou 'all'"
+if [[ "$type_station" != "hvb" && "$type_station" != "hva" && "$type_station" != "lv" ]]; then
+    echo "Erreur : Le type de station doit être exactement 'hvb', 'hva' ou 'lv'."
+    afficher_aide
+    echo "Temps utile de traitement : 0.0sec"
+    exit 1
+fi
+
+# Validation des paramètres de type de station
+if [[ "$type_consommateur" != "indiv" && "$type_consommateur" != "comp" && "$type_consommateur" != "all" ]]; then
+    echo "Erreur : Le type de station doit être exactement 'indiv', 'comp' ou 'all'."
     afficher_aide
     echo "Temps utile de traitement : 0.0sec"
     exit 1
