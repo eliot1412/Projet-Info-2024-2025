@@ -1,4 +1,4 @@
-# Project-Info-2024-2025
+# Projet-Info-2024-2025
 
 Ce projet consiste à créer un programme permettant de faire la synthèse de données d’un système de distribution d'électricité.Il utilise un script shell pour filtrer et traiter les données et un programme C pour la partie calcul.
 
