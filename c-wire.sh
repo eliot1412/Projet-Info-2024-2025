@@ -305,7 +305,7 @@ case "$combined_type" in
         ;;
   'hvb comp')
     output_file="hvb_comp.csv"
-    echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
+    echo "Station HVB:Capacité:Consommation (entreprises)" > "$output_file"
     cat $1 | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Vérification de la création du fichier
     if [ -f "$output_file" ]; then
