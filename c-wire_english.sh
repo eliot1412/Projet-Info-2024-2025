@@ -10,25 +10,25 @@
 
 # Parameters
 input_file="$1"
-type_station="$2"
-type_consommateur="$3"
-id_centrale="${4:-}"  # Optional
-aide_optionnel="${5:-}"
+station_type="$2"
+consumer_type="$3"
+power_plant_id="${4:-}"  # Optional
+optional_help="${5:-}"
 
 #limit number of arguments, if after 5th argument different from -h exit
 
 
-function afficher_aide {
-    echo "Usage : $0 <fichier_entrée> <type_station> <type_consommateur> [id_centrale] [-h]"
+function show_help {
+    echo "Usage : $0 <fichier_entrée> <station_type> <consumer_type> [power_plant_id] [-h]"
     echo ""
     echo "Ce script permet de traiter les données des stations énergétiques en fonction du type de station,"
     echo "du type de consommateur et, éventuellement, d'un identifiant de centrale spécifique."
     echo ""
     echo "Paramètres :"
     echo "  <fichier_entrée>      Chemin vers le fichier contenant les données à traiter (obligatoire)."
-    echo "  <type_station>        Type de station ('hvb', 'hva', 'lv')."
-    echo "  <type_consommateur>   Type de consommateur ('comp', 'indiv', 'all')."
-    echo "  [id_centrale]         Identifiant de la centrale (facultatif)."
+    echo "  <station_type>        Type de station ('hvb', 'hva', 'lv')."
+    echo "  <consumer_type>   Type de consommateur ('comp', 'indiv', 'all')."
+    echo "  [power_plant_id]         Identifiant de la centrale (facultatif)."
     echo "  -h                    Affiche cette aide et quitte le programme."
     echo ""
     echo "Exemples :"
@@ -45,28 +45,28 @@ function afficher_aide {
 }
 
 #allows you to use the help command
-if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" = "-h" || "$id_centrale" = "-h" || "$aide_optionnel" = "-h" ]]; then
-    afficher_aide
+if  [[ "$input_file" = "-h"  || "$station_type" = "-h"  || "$consumer_type" = "-h" || "$power_plant_id" = "-h" || "$optional_help" = "-h" ]]; then
+    show_help
     exit 1
 
 fi
 
-# Check if id_centrale is defined and if it is an integer
-if [ -n "$id_centrale" ]; then
-    # Check if id_centrale is an integer
-    if ! [[ "$id_centrale" =~ ^-?[0-9]+$ ]]; then
-        echo "Erreur : Le 5eme argument et id_centrale doit être un nombre entier."
-        afficher_aide
+# Check if power_plant_id is defined and if it is an integer
+if [ -n "$power_plant_id" ]; then
+    # Check if power_plant_id is an integer
+    if ! [[ "$power_plant_id" =~ ^-?[0-9]+$ ]]; then
+        echo "Erreur : Le 5eme argument et power_plant_id doit être un nombre entier."
+        show_help
         exit 1
     fi
 fi
 
 # Check if optional_help is defined and if it is ‘-h’.
-if [ -n "$aide_optionnel" ]; then
+if [ -n "$optional_help" ]; then
     # Check that optional_help is exactly ‘-h’.
-    if [ "$aide_optionnel" != "-h" ]; then
-        echo "Erreur : aide_optionnel doit être '-h' ou vide."
-        afficher_aide
+    if [ "$optional_help" != "-h" ]; then
+        echo "Erreur : optional_help doit être '-h' ou vide."
+        show_help
         exit 1
     fi
 
@@ -74,7 +74,7 @@ fi
 
 
 if [ "$#" -lt 3 ]; then
-    afficher_aide
+    show_help
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
@@ -82,32 +82,32 @@ fi
 # Check that the file exists
 if [ ! -f "$input_file" ]; then
     echo "Erreur : Le fichier $input_file n'existe pas."
-    afficher_aide
+    show_help
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
 
 # Validate station type parameters
-if [[ "$type_station" != "hvb" && "$type_station" != "hva" && "$type_station" != "lv" ]]; then
+if [[ "$station_type" != "hvb" && "$station_type" != "hva" && "$station_type" != "lv" ]]; then
     echo "Erreur : Le type de station doit être exactement 'hvb', 'hva' ou 'lv'."
-    afficher_aide
+    show_help
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
 
 # Validation of consumer type parameters
-if [[ "$type_consommateur" != "indiv" && "$type_consommateur" != "comp" && "$type_consommateur" != "all" ]]; then
+if [[ "$consumer_type" != "indiv" && "$consumer_type" != "comp" && "$consumer_type" != "all" ]]; then
     echo "Erreur : Le type de station doit être exactement 'indiv', 'comp' ou 'all'."
-    afficher_aide
+    show_help
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
 
 
 # Check for forbidden combinations
-if { [ "$type_station" = "hvb" ] || [ "$type_station" = "hva" ]; } && { [ "$type_consommateur" = "all" ] || [ "$type_consommateur" = "indiv" ]; }; then
+if { [ "$station_type" = "hvb" ] || [ "$station_type" = "hva" ]; } && { [ "$consumer_type" = "all" ] || [ "$consumer_type" = "indiv" ]; }; then
     echo "Erreur : Les options 'hvb all', 'hvb indiv', 'hva all', et 'hva indiv' sont interdites. Il n'y a que des entreprises connectées aux stations HVB et HVA"
-    afficher_aide
+    show_help
     echo "Temps utile de traitement : 0.0sec"
     exit 1
 fi
@@ -117,8 +117,8 @@ fi
 c_executable="arbre_avl"
 c_source="main3.c"
 
-CHEMIN_PROJET=$(dirname "$0")/codeC
-#if [ ! -f "$CHEMIN_PROJET/$c_executable" ]; then
+PROJECT_PATH=$(dirname "$0")/codeC
+#if [ ! -f "$PROJECT_PATH/$c_executable" ]; then
 
 # Check that the executable exists
   if [ ! -f "$c_executable" ]; then
@@ -126,7 +126,7 @@ CHEMIN_PROJET=$(dirname "$0")/codeC
 
            # Start compilation with make
        # make -f ~/PROJET-INFO-PRE-ING-2/codeC/Makefile
-        make -C "$CHEMIN_PROJET"
+        make -C "$PROJECT_PATH"
         if [ $? -ne 0 ]; then
              # If compilation fails
             echo "Erreur lors de la compilation. Le programme n'a pas pu être généré."
@@ -169,12 +169,12 @@ else
 fi
 
 
-# Check that $id_centrale exists and create the combined variable.
-  if [ -z "$id_centrale" ]; then
-      combined_type="$type_station $type_consommateur" 
-      #If id_centrale is not supplied, $id_centrale is not included.
+# Check that $power_plant_id exists and create the combined variable.
+  if [ -z "$power_plant_id" ]; then
+      combined_type="$station_type $consumer_type" 
+      #If power_plant_id is not supplied, $power_plant_id is not included.
   else
-      combined_type="$type_station $type_consommateur $id_centrale"  # Otherwise, include $id_centrale in the combination.
+      combined_type="$station_type $consumer_type $power_plant_id"  # Otherwise, include $power_plant_id in the combination.
 
   fi
 
@@ -183,10 +183,10 @@ EXECUTABLE=$(dirname "$0")/codeC/$c_executable
 
 
 case "$combined_type" in
-  "hvb comp $id_centrale")
-    output_file="hvb_comp_${id_centrale}.csv"  # Use $id_centrale in the name of the output file
+  "hvb comp $power_plant_id")
+    output_file="hvb_comp_${power_plant_id}.csv"  # Use $power_plant_id in the name of the output file
     echo "Station HVB:Capacité:Consommation (entreprises)" > "$output_file"
-    cat $1 | grep -E "^$id_centrale;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
+    cat $1 | grep -E "^$power_plant_id;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Check that the file has been created
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
@@ -196,10 +196,10 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-  "hva comp $id_centrale")
-    output_file="hva_comp_${id_centrale}.csv"  # Use $id_centrale in the name of the output file
+  "hva comp $power_plant_id")
+    output_file="hva_comp_${power_plant_id}.csv"  # Use $power_plant_id in the name of the output file
     echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
-    cat $1 | grep -E "^$id_centrale;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
+    cat $1 | grep -E "^$power_plant_id;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Check file creation
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
@@ -209,10 +209,10 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-    "lv indiv $id_centrale")
-    output_file="lv_indiv_${id_centrale}.csv"  # Use $id_centrale in the name of the output file
+    "lv indiv $power_plant_id")
+    output_file="lv_indiv_${power_plant_id}.csv"  # Use $power_plant_id in the name of the output file
     echo "Station LV:Capacité:Consommation (particuliers)" > "$output_file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
+    cat $1 | grep -E "^$power_plant_id;-;[0-9-]+;[0-9]+;-;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Check file creation
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
@@ -222,10 +222,10 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-    "lv comp $id_centrale")
-    output_file="lv_comp_${id_centrale}.csv"  # Use $id_centrale in the name of the output file
+    "lv comp $power_plant_id")
+    output_file="lv_comp_${power_plant_id}.csv"  # Use $power_plant_id in the name of the output file
     echo "Station LV:Capacité:Consommation (entreprises)" > "$output_file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
+    cat $1 | grep -E "^$power_plant_id;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
     # Check file creation
     if [ -f "$output_file" ]; then
         echo "Fichier généré avec succès : $output_file"
@@ -235,10 +235,10 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-   "lv all $id_centrale")
-output_file="lv_all_${id_centrale}.csv" # Output file
+   "lv all $power_plant_id")
+output_file="lv_all_${power_plant_id}.csv" # Output file
  echo "Station LV:Capacité:Consommation (tous)" > "$output_file"
- cat $1 | grep -E "^${id_centrale};-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
+ cat $1 | grep -E "^${power_plant_id};-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
 # Check file creation
 if [ -f "$output_file" ]; then
     echo "Nice"
@@ -246,7 +246,7 @@ else
     echo "Erreur : Fichier non généré."
 fi
 # Processing to extract the 20 stations with the highest and lowest consumption
-minmax_file="tmp_${id_centrale}.csv" # Name the minmax temporary file with the 10 lowest and 10 highest consumption stations
+minmax_file="tmp_${power_plant_id}.csv" # Name the minmax temporary file with the 10 lowest and 10 highest consumption stations
 
 # Add a header to the output file
 echo "Station LV:Capacité:Consommation (tous)" > "$minmax_file"
@@ -264,7 +264,7 @@ echo "Erreur : Fichier temporaire non généré."
 fi
 
 # Create a new file with the 4th column (difference between the values in the 2nd and 3rd columns)
-new_file="lv_all_minmax_difference_${id_centrale}.csv"
+new_file="lv_all_minmax_difference_${power_plant_id}.csv"
 echo "Station LV:Capacité:Consommation (tous):Différence" > "$new_file"  # Header with the new column
 
 # Add the 4th column, which is the difference between the 2nd and 3rd columns
@@ -285,7 +285,7 @@ fi
 gnuplot << EOF
 set datafile separator ":"
 set terminal pngcairo enhanced
-set output "graphique_minmax_${id_centrale}.png"
+set output "minmax_graph_${power_plant_id}.png"
 
 set title "Consommation des 20 postes LV les plus et moins chargés"
 set xlabel "Postes"
@@ -295,11 +295,11 @@ set style fill solid 1.0 border -1
 set xtics rotate by -45
 set palette defined (0 "green", 1 "red")
 
-plot "lv_all_minmax_difference_${id_centrale}.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
+plot "lv_all_minmax_difference_${power_plant_id}.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
 EOF
 
 # New file without the 4th column
-new_file_without_diff="lv_all_minmax_${id_centrale}.csv"
+new_file_without_diff="lv_all_minmax_${power_plant_id}.csv"
 
 # Create a header for the new file without the 4th column
 echo "Min and Max 'capacity-load' extreme nodes" > "$new_file_without_diff"
@@ -310,13 +310,13 @@ awk -F':' 'BEGIN {OFS=":"} { $4=""; print $1, $2, $3 }' "$new_file" | tail -n +2
 
  # Check the creation of the file
 if [ -f "$new_file_without_diff" ]; then
-echo "Fichier "lv_all_minmax_${id_centrale}.csv" généré : $new_file_without_diff"
+echo "Fichier "lv_all_minmax_${power_plant_id}.csv" généré : $new_file_without_diff"
 else
 echo "Erreur : Fichier sans différence non généré."
 fi
-mv tmp_${id_centrale}.csv tmp/
-mv lv_all_minmax_difference_${id_centrale}.csv tmp/
-mv graphique_minmax_${id_centrale}.png graph/
+mv tmp_${power_plant_id}.csv tmp/
+mv lv_all_minmax_difference_${power_plant_id}.csv tmp/
+mv minmax_graph_${power_plant_id}.png graph/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $output_file."
     ;;
@@ -423,7 +423,7 @@ fi
 gnuplot << EOF
 set datafile separator ":"
 set terminal pngcairo enhanced
-set output "graphique_minmax.png"
+set output "minmax_graph.png"
 
 set title "Consommation des 20 postes LV les plus et moins chargés"
 set xlabel "Postes"
@@ -454,7 +454,7 @@ else
 fi
 mv tmp.csv tmp/
 mv lv_all_minmax_difference.csv tmp/
-mv graphique_minmax.png graph/
+mv minmax_graph.png graph/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $new_file."
     ;;
