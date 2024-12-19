@@ -52,6 +52,28 @@ if  [[ "$input_file" = "-h"  || "$type_station" = "-h"  || "$type_consommateur" 
 
 fi
 
+# Vérifier si id_centrale est défini et si c'est un entier
+if [ -n "$id_centrale" ]; then
+    # Vérifier si id_centrale est un nombre entier
+    if ! [[ "$id_centrale" =~ ^-?[0-9]+$ ]]; then
+        echo "Erreur : Le 5eme argument et id_centrale doit être un nombre entier."
+        afficher_aide
+        exit 1
+    fi
+fi
+
+# Vérifier si aide_optionnel est défini et si c'est "-h"
+if [ -n "$aide_optionnel" ]; then
+    # Vérifier si aide_optionnel est exactement "-h"
+    if [ "$aide_optionnel" != "-h" ]; then
+        echo "Erreur : aide_optionnel doit être '-h' ou vide."
+        afficher_aide
+        exit 1
+    fi
+
+fi
+
+
 if [ "$#" -lt 3 ]; then
     afficher_aide
     echo "Temps utile de traitement : 0.0sec"
@@ -124,12 +146,12 @@ else
 fi
 
 
-if [ ! -d "tests" ]; then
-  mkdir tests
-  echo "Le dossier 'tests' a été créé."
-else
-  echo "Le dossier 'tests' existe déjà."
-fi
+#if [ ! -d "tests" ]; then
+  #mkdir tests
+  #echo "Le dossier 'tests' a été créé."
+#else
+#echo "Le dossier 'tests' existe déjà."
+#fi
 
 if [ ! -d "tmp" ]; then
   mkdir tmp
@@ -139,7 +161,7 @@ else
 fi
 
 if [ ! -d "graphs" ]; then
-  mkdir tmp
+  mkdir graphs
   echo "Le dossier 'graphs' a été créé."
 else
   echo "Le dossier 'graphs' existe déjà."
@@ -175,6 +197,8 @@ fi
   fi
 
 EXECUTABLE=$(dirname "$0")/codeC/$c_executable
+
+
 
 case "$combined_type" in
   "hvb comp $id_centrale")
