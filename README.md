@@ -1,7 +1,5 @@
 # Project-Info-2024-2025
 
-une brève description du projet 
-
 Ce projet consiste consiste à créer un programme permettant de faire la synthèse de données d’un système de distribution d'électricité.Il utilise un script shell pour filtrer et traiter les données et un programme C pour la partie calcul.
 
 ## Comment faire pour que le programme compile et qu'il s'exécute ?
@@ -13,6 +11,8 @@ Les fichiers résultats seront dans le dossier principal, les fichiers temporair
 
 ## Comment ça fonctionne ?
 
+La partie shell vas prendre en entrée le fichier de données et vas compiler make dans le dossier codeC, puis le shell vas sélectionner les lignes et colonnes correspondante à la demande de l'utilisateur. Le C qui recevra ces lignes par entrée directe via le shell vas additioner les valeurs de capacité et de consommation pour chaque identifiants des différentes stations demandées.
+Pour lv all le programme vas faire un tri supplémentaire qui vas garder les 10 premiers et 10 derniers
 
 
 ## Ce que l'on a utilisé
