@@ -385,7 +385,7 @@ else
 fi
 
     # Création d'un nouveau fichier avec la 4ème colonne (différence entre les valeurs de la 2ème et 3ème colonne)
-    new_file="lv_all_with_difference.csv"
+    new_file="lv_all_minmax_difference.csv"
     echo "Station LV:Capacité:Consommation:Différence" > "$new_file"  # En-tête avec la nouvelle colonne
 
     # Ajouter la 4ème colonne qui est la différence entre la 2ème et la 3ème colonne
@@ -403,12 +403,13 @@ fi
         echo "Erreur : Fichier avec différence non généré."
     fi
 
+
 gnuplot << EOF
 set datafile separator ":"
 set terminal pngcairo enhanced
 set output "graphique_minmax.png"
 
-set title "Consommation des 10 postes LV les plus et moins chargés"
+set title "Consommation des 20 postes LV les plus et moins chargés"
 set xlabel "Postes"
 set ylabel "Capacité - Consommation (tous)"
 set style data histograms
@@ -416,29 +417,29 @@ set style fill solid 1.0 border -1
 set xtics rotate by -45
 set palette defined (0 "green", 1 "red")
 
-plot "lv_all_with_difference.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
+plot "lv_all_minmax_difference.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
 EOF
 
+# Nouveau fichier sans la 4ème colonne
+new_file_without_diff="lv_all_minmax.csv"
 
- # Création du fichier lv_allminmax.csv avec la colonne 4 calculée
-temp_file="lv_all_minmax.csv"
-echo "Min and Max 'capacity-load' extreme nodes" > "$temp_file"
-echo "Station LV:Capacité:Consommation (tous)" >> "$temp_file"
+# Créez un en-tête pour le nouveau fichier sans la 4ème colonne
+echo "Min and Max 'capacity-load' extreme nodes" > "$new_file_without_diff"
+echo "Station LV:Capacité:Consommation (tous)" >> "$new_file_without_diff"
 
-# Utilisation de awk pour ajouter la colonne 4, tri et suppression des doublons
-awk -F':' 'BEGIN {OFS=":"} {
-    col4 = $2 - $3  # Calcul de la colonne 4
-    print $0, col4   # Affichage de la ligne avec la nouvelle colonne
-}' "$minmax_file" | tail -n +2 | sort -t':' -k4 -n | awk '!seen[$0]++' | cut -d':' -f1-3 >> "$temp_file"
-# Vérification de la création du fichier min/max
-if [ -f "$temp_file" ]; then
-    echo "Fichier min/max généré : $temp_file"
+# Supprimer la 4ème colonne (différence) du fichier `new_file`
+awk -F':' 'BEGIN {OFS=":"} { $4=""; print $1, $2, $3 }' "$new_file" | tail -n +2>> "$new_file_without_diff"
+
+# Vérification de la création du fichier sans la différence
+if [ -f "$new_file_without_diff" ]; then
+    echo "Fichier sans différence généré : $new_file_without_diff"
 else
-    echo "Erreur : Fichier min/max non généré."
+    echo "Erreur : Fichier sans différence non généré."
 fi
 mv tmp.csv tmp/
+mv lv_all_minmax_difference.csv tmp/
 # Confirmation
-echo "Traitement terminé. Les résultats sont dans $temp_file et dans $output_file."
+echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $new_file."
     ;;
   *)
     echo "Choix invalide, les arguments possibles sont hva comp, hvb comp, lv indiv, lv comp ou lv all"
