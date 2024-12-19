@@ -8,6 +8,7 @@ Lors de l'exécution du programme il faut être dans le bon dossier (faire cd "c
 Commande pour l'éxecution : bash c-wire.sh "le chemin du fichier d'entrée" "type de station" "type de consommateur" "identifiant de centrale (optionnel)" "-h (optionnel et pour aide)"
 Exemple : bash c-wire.sh input/c-wire_v00.dat hvb comp 1
 Les fichiers résultats seront dans le dossier principal, les fichiers temporaires dans tmp, les graphiques dans graphs et nos essais dans tests.
+Sur certains ordinateurs la première exécution peut prendre 30 secondes mais les suivantes seront beacoup plus rapides (entre 0.3 et 6 secondes).
 
 ## Comment ça fonctionne ?
 
