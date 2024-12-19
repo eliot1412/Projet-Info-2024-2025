@@ -260,50 +260,91 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-    "lv all $id_centrale")
-    file="lv_all_${id_centrale}.csv"  # Utilisation de $id_centrale dans le nom du fichier temporaire
-    echo "Station LV:Capacité:Consommation (tous)" > "$file"
-    cat $1 | grep -E "^$id_centrale;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0' | cut -d';' --complement -f1,2,3,5,6 | tail -n+1  | "$EXECUTABLE" >> "$file"
-    
-    # Traitement pour extraire les 10 postes avec la plus forte et la plus faible consommation
-    minmax_file="tmp_${id_centrale}.csv" # Nom du fichier de temporaire minmax avec 10 plus petite et 10 plus grande
+   "lv all $id_centrale")
+output_file="lv_all_${id_centrale}.csv" # Fichier de sortie
+ echo "Station LV:Capacité:Consommation (tous)" > "$output_file"
+ cat $1 | grep -E "^${id_centrale};-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
+# Vérification de la création du fichier
+if [ -f "$output_file" ]; then
+    echo "Nice"
+else
+    echo "Erreur : Fichier non généré."
+fi
+# Traitement pour extraire les 10 postes avec la plus forte et la plus faible consommation
+minmax_file="tmp_${id_centrale}.csv" # Nom du fichier de temporaire minmax avec 10 plus petite et 10 plus grande
 
-    # Ajouter un en-tête au fichier de sortie
-    echo "Station LV:Capacité:Consommation (tous)" > "$minmax_file"
+# Ajouter un en-tête au fichier de sortie
+echo "Station LV:Capacité:Consommation (tous)" > "$minmax_file"
 
-    # Trier les postes par consommation, extraire les 10 plus bas et les 10 plus hauts
-    cat "$file" | tail -n +2 | sort -t':' -k3 -n | head -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus faible consommation
+# Trier les postes par consommation, extraire les 10 plus bas et les 10 plus hauts
+cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | head -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus faible consommation
 
-    cat "$file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus forte consommation
+cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_file" # Ajout des 10 postes avec la plus forte consommation
 
-    # Vérification de la création du fichier min/max
-    if [ -f "$minmax_file" ]; then
-        echo "Fichier temp généré : nice"
-    else
-        echo "Erreur : Fichier temp non généré."
-    fi
+# Vérification de la création du fichier min/max
+if [ -f "$minmax_file" ]; then
+echo "Fichier temporaire généré : nice"
+else
+echo "Erreur : Fichier temporaire non généré."
+fi
 
-     # Création du fichier lv_allminmax.csv avec la colonne 4 calculée
-    temp_file="lv_all_minmax_${id_centrale}.csv"
-    echo "Min and Max 'capacity-load' extreme nodes" > "$temp_file"
-    echo "Station LV:Capacité:Consommation (tous)" >> "$temp_file"
+# Création d'un nouveau fichier avec la 4ème colonne (différence entre les valeurs de la 2ème et 3ème colonne)
+new_file="lv_all_minmax_difference_${id_centrale}.csv"
+echo "Station LV:Capacité:Consommation (tous):Différence" > "$new_file"  # En-tête avec la nouvelle colonne
 
-    # Utilisation de awk pour ajouter la colonne 4, tri et suppression des doublons
-    awk -F':' 'BEGIN {OFS=":"} {
-        col4 = $2 - $3  # Calcul de la colonne 4
-        print $0, col4   # Affichage de la ligne avec la nouvelle colonne
-    }' "$minmax_file" | tail -n +2 | sort -t':' -k4 -n | awk '!seen[$0]++' | cut -d':' -f1-3 >> "$temp_file"
-    # Vérification de la création du fichier min/max
-    if [ -f "$temp_file" ]; then
-        echo "Fichier minmax généré : $temp_file"
-    else
-        echo "Erreur : Fichier minmax non généré."
-    fi
-    mv tmp_${id_centrale}.csv tmp/
-    # Confirmation
-    echo "Traitement terminé. Les résultats sont dans $temp_file et dans $output_file."
-        ;;
-  'hvb comp')
+# Ajouter la 4ème colonne qui est la différence entre la 2ème et la 3ème colonne
+awk -F':' 'BEGIN {OFS=":"} {
+    col2 = $2
+    col3 = $3
+    diff = col2 - col3   # Calcul de la différence
+    print $0, diff   # Ajouter la différence à la ligne
+}' "$minmax_file" | tail -n +2 | sort -t':' -k4 -n | awk '!seen[$0]++' >> "$new_file"
+
+# Vérification de la création du fichier avec la différence
+if [ -f "$new_file" ]; then
+    echo "Fichier avec différence généré dans $new_file"
+else
+    echo "Erreur : Fichier avec différence non généré."
+fi
+
+gnuplot << EOF
+set datafile separator ":"
+set terminal pngcairo enhanced
+set output "graphique_minmax.png"
+
+set title "Consommation des 20 postes LV les plus et moins chargés"
+set xlabel "Postes"
+set ylabel "Capacité - Consommation (tous)"
+set style data histograms
+set style fill solid 1.0 border -1
+set xtics rotate by -45
+set palette defined (0 "green", 1 "red")
+
+plot "lv_all_minmax_difference_${id_centrale}.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
+EOF
+
+# Nouveau fichier sans la 4ème colonne
+new_file_without_diff="lv_all_minmax_${id_centrale}.csv"
+
+# Créez un en-tête pour le nouveau fichier sans la 4ème colonne
+echo "Min and Max 'capacity-load' extreme nodes" > "$new_file_without_diff"
+echo "Station LV:Capacité:Consommation (tous)" >> "$new_file_without_diff"
+
+# Supprimer la 4ème colonne (différence) du fichier `new_file`
+awk -F':' 'BEGIN {OFS=":"} { $4=""; print $1, $2, $3 }' "$new_file" | tail -n +2 >> "$new_file_without_diff"
+
+# Vérification de la création du fichier sans la différence
+if [ -f "$new_file_without_diff" ]; then
+echo "Fichier "lv_all_minmax_${id_centrale}.csv" généré : $new_file_without_diff"
+else
+echo "Erreur : Fichier sans différence non généré."
+fi
+mv tmp_${id_centrale}.csv tmp/
+mv lv_all_minmax_difference_${id_centrale}.csv tmp/
+# Confirmation
+echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $output_file."
+    ;;
+    "hvb comp")
     output_file="hvb_comp.csv"
     echo "Station HVB:Capacité:Consommation (entreprises)" > "$output_file"
     cat $1 | grep -E "^[0-9]+;[0-9]+;-;-;" | tr '-' '0' | cut -d';' --complement -f1,3,4,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
@@ -316,7 +357,7 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-  'hva comp')
+  "hva comp")
     output_file="hva_comp.csv" # Fichier de sortie
     echo "Station HVA:Capacité:Consommation (entreprises)" > "$output_file"
     cat $1 | grep -E "^[0-9]+;[0-9-]+;[0-9]+;-;" | tr '-' '0' | cut -d';' --complement -f1,2,4,5,6 | tail -n+1  | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
@@ -329,7 +370,7 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-    'lv indiv')
+    "lv indiv")
     #1;-;1;1;-;-;241999040;-
     output_file="lv_indiv.csv" # Fichier de sortie
      echo "Station LV:Capacité:Consommation (particuliers)" > "$output_file"
@@ -343,7 +384,7 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-    'lv comp')
+    "lv comp")
     output_file="lv_comp.csv" # Fichier de sortie
      echo "Station LV:Capacité:Consommation (entreprises)" > "$output_file"
     cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;-;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
@@ -356,7 +397,7 @@ case "$combined_type" in
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
     ;;
-    'lv all')
+    "lv all")
     output_file="lv_all.csv" # Fichier de sortie
      echo "Station LV:Capacité:Consommation (tous)" > "$output_file"
      cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
@@ -364,7 +405,7 @@ case "$combined_type" in
     if [ -f "$output_file" ]; then
         echo "Nice"
     else
-        echo "Erreur : Fichier non généré."
+        echo "Erreur : "lv_all" non généré."
     fi
 # Traitement pour extraire les 10 postes avec la plus forte et la plus faible consommation
 minmax_file="tmp.csv" # Nom du fichier de temporaire minmax avec 10 plus petite et 10 plus grande
@@ -379,14 +420,14 @@ cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_fil
 
 # Vérification de la création du fichier min/max
 if [ -f "$minmax_file" ]; then
-    echo "Fichier min/max généré : nice"
+    echo "Fichier temporaire généré : nice"
 else
-    echo "Erreur : Fichier min/max non généré."
+    echo "Erreur : Fichier temporaire non généré."
 fi
 
     # Création d'un nouveau fichier avec la 4ème colonne (différence entre les valeurs de la 2ème et 3ème colonne)
     new_file="lv_all_minmax_difference.csv"
-    echo "Station LV:Capacité:Consommation:Différence" > "$new_file"  # En-tête avec la nouvelle colonne
+    echo "Station LV:Capacité:Consommation (tous):Différence" > "$new_file"  # En-tête avec la nouvelle colonne
 
     # Ajouter la 4ème colonne qui est la différence entre la 2ème et la 3ème colonne
     awk -F':' 'BEGIN {OFS=":"} {
@@ -432,7 +473,7 @@ awk -F':' 'BEGIN {OFS=":"} { $4=""; print $1, $2, $3 }' "$new_file" | tail -n +2
 
 # Vérification de la création du fichier sans la différence
 if [ -f "$new_file_without_diff" ]; then
-    echo "Fichier sans différence généré : $new_file_without_diff"
+    echo "Fichier "lv_all_minmax.csv" généré : $new_file_without_diff"
 else
     echo "Erreur : Fichier sans différence non généré."
 fi
