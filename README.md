@@ -4,7 +4,7 @@ Ce projet consiste à créer un programme permettant de faire la synthèse de do
 
 ## Comment faire pour que le programme compile et qu'il s'exécute ?
 
-Quand vous êtes dans le github, il faut tout d'abord cliquer sur "<> Code", puis télécharger en zip (Download ZIP)
+Quand vous êtes dans le github, il faut tout d'abord être dans la branche "main", ensuite cliquer sur "<> Code", et enfin tout télécharger en zip (Download ZIP)
 
 Ensuite vous devrez extraire l'entièreté du zip dans un repertoire. 
 Exemple : Documents ou Dossier Personnel
