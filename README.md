@@ -3,7 +3,13 @@
 Ce projet consiste à créer un programme permettant de faire la synthèse de données d’un système de distribution d'électricité.Il utilise un script shell pour filtrer et traiter les données et un programme C pour la partie calcul.
 
 ## Comment faire pour que le programme compile et qu'il s'exécute ?
-Il faut mettre les fichiers d'entrée dans le dossier input. (chemin : Projet-Info-2024-2025-main/input).
+
+Quand vous êtes dans le github, il faut tout d'abord cliquer sur "<> Code", puis télécharger en zip (Download ZIP)
+
+Ensuite vous devrez extraire l'entièreté du zip dans un repertoire. 
+Exemple : Documents ou Dossier Personnel
+
+Il faut mettre les fichiers d'entrée que vous voulez dans le dossier input. (chemin : Projet-Info-2024-2025-main/input).
 
 Lors de l'exécution du programme il faut être dans le bon dossier (faire cd "chemin du fichier télécharger").
 
