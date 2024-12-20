@@ -57,7 +57,7 @@ if [ -n "$power_plant_id" ]; then
     if ! [[ "$power_plant_id" =~ ^-?[0-9]+$ ]]; then
         echo "Erreur : Le 5eme argument et power_plant_id doit être un nombre entier."
         show_help
-        exit 1
+        exit 2
     fi
 fi
 
@@ -67,7 +67,7 @@ if [ -n "$optional_help" ]; then
     if [ "$optional_help" != "-h" ]; then
         echo "Erreur : optional_help doit être '-h' ou vide."
         show_help
-        exit 1
+        exit 3
     fi
 
 fi
@@ -76,7 +76,7 @@ fi
 if [ "$#" -lt 3 ]; then
     show_help
     echo "Temps utile de traitement : 0.0sec"
-    exit 1
+    exit 4
 fi
 
 # Check that the file exists
@@ -84,7 +84,7 @@ if [ ! -f "$input_file" ]; then
     echo "Erreur : Le fichier $input_file n'existe pas."
     show_help
     echo "Temps utile de traitement : 0.0sec"
-    exit 1
+    exit 5
 fi
 
 # Validate station type parameters
@@ -92,7 +92,7 @@ if [[ "$station_type" != "hvb" && "$station_type" != "hva" && "$station_type" !=
     echo "Erreur : Le type de station doit être exactement 'hvb', 'hva' ou 'lv'."
     show_help
     echo "Temps utile de traitement : 0.0sec"
-    exit 1
+    exit 6
 fi
 
 # Validation of consumer type parameters
@@ -100,7 +100,7 @@ if [[ "$consumer_type" != "indiv" && "$consumer_type" != "comp" && "$consumer_ty
     echo "Erreur : Le type de station doit être exactement 'indiv', 'comp' ou 'all'."
     show_help
     echo "Temps utile de traitement : 0.0sec"
-    exit 1
+    exit 7
 fi
 
 
@@ -109,7 +109,7 @@ if { [ "$station_type" = "hvb" ] || [ "$station_type" = "hva" ]; } && { [ "$cons
     echo "Erreur : Les options 'hvb all', 'hvb indiv', 'hva all', et 'hva indiv' sont interdites. Il n'y a que des entreprises connectées aux stations HVB et HVA"
     show_help
     echo "Temps utile de traitement : 0.0sec"
-    exit 1
+    exit 8
 fi
 
 
@@ -131,7 +131,7 @@ PROJECT_PATH=$(dirname "$0")/codeC
              # If compilation fails
             echo "Erreur lors de la compilation. Le programme n'a pas pu être généré."
             echo "Temps d'execution : 0.0sec"
-            exit 1
+            exit 9
 
         else
           echo "Compilation réussie."
@@ -192,6 +192,7 @@ case "$combined_type" in
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 10
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -205,6 +206,7 @@ case "$combined_type" in
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 11
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -218,6 +220,7 @@ case "$combined_type" in
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 12
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -231,6 +234,7 @@ case "$combined_type" in
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 13
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -244,6 +248,7 @@ if [ -f "$output_file" ]; then
     echo "Nice"
 else
     echo "Erreur : Fichier non généré."
+    exit 14
 fi
 # Processing to extract the 20 stations with the highest and lowest consumption
 minmax_file="tmp_${power_plant_id}.csv" # Name the minmax temporary file with the 10 lowest and 10 highest consumption stations
@@ -261,6 +266,7 @@ if [ -f "$minmax_file" ]; then
 echo "Fichier temporaire généré : nice"
 else
 echo "Erreur : Fichier temporaire non généré."
+exit 15
 fi
 
 # Create a new file with the 4th column (difference between the values in the 2nd and 3rd columns)
@@ -280,6 +286,7 @@ if [ -f "$new_file" ]; then
     echo "Fichier avec différence généré dans $new_file"
 else
     echo "Erreur : Fichier avec différence non généré."
+    exit 16
 fi
 
 gnuplot << EOF
@@ -313,10 +320,11 @@ if [ -f "$new_file_without_diff" ]; then
 echo "Fichier "lv_all_minmax_${power_plant_id}.csv" généré : $new_file_without_diff"
 else
 echo "Erreur : Fichier sans différence non généré."
+exit 17
 fi
 mv tmp_${power_plant_id}.csv tmp/
 mv lv_all_minmax_difference_${power_plant_id}.csv tmp/
-mv minmax_graph_${power_plant_id}.png graph/
+mv minmax_graph_${power_plant_id}.png graphs/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $output_file."
     ;;
@@ -329,6 +337,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 18
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -342,6 +351,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 19
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -355,6 +365,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 20
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -368,6 +379,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
         echo "Fichier généré avec succès : $output_file"
     else
         echo "Erreur : Fichier non généré."
+        exit 21
     fi
     # Confirmation
     echo "Traitement terminé. Les résultats sont dans $output_file."
@@ -381,6 +393,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
         echo "Nice"
     else
         echo "Erreur : "lv_all" non généré."
+        exit 22
     fi
 # Processing to extract the 20 stations with the highest and lowest consumption
 minmax_file="tmp.csv" # Name the minmax temporary file with the 10 lowest and 10 highest consumption stations
@@ -395,9 +408,10 @@ cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_fil
 
  # Check the creation of the file
 if [ -f "$minmax_file" ]; then
-    echo "Fichier temporaire généré : nice"
+    echo "Fichier temporaire généré"
 else
     echo "Erreur : Fichier temporaire non généré."
+    exit 23
 fi
 
 # Create a new file with the 4th column (difference between the values in the 2nd and 3rd columns)
@@ -417,6 +431,7 @@ fi
         echo "Fichier avec différence généré : $new_file"
     else
         echo "Erreur : Fichier avec différence non généré."
+        exit 24
     fi
 
 
@@ -451,6 +466,7 @@ if [ -f "$new_file_without_diff" ]; then
     echo "Fichier "lv_all_minmax.csv" généré : $new_file_without_diff"
 else
     echo "Erreur : Fichier sans différence non généré."
+    exit 25
 fi
 mv tmp.csv tmp/
 mv lv_all_minmax_difference.csv tmp/
@@ -460,7 +476,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
     ;;
   *)
     echo "Choix invalide, les arguments possibles sont hva comp, hvb comp, lv indiv, lv comp ou lv all"
-    exit 1
+    exit 26
     ;;
 esac
 
