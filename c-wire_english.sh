@@ -238,7 +238,7 @@ case "$combined_type" in
    "lv all $power_plant_id")
 output_file="lv_all_${power_plant_id}.csv" # Output file
  echo "Station LV:Capacité:Consommation (tous)" > "$output_file"
- cat $1 | grep -E "^${power_plant_id};-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
+ cat $1 | grep -E "^${power_plant_id};-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
 # Check file creation
 if [ -f "$output_file" ]; then
     echo "Nice"
@@ -316,7 +316,7 @@ echo "Erreur : Fichier sans différence non généré."
 fi
 mv tmp_${power_plant_id}.csv tmp/
 mv lv_all_minmax_difference_${power_plant_id}.csv tmp/
-mv minmax_graph_${power_plant_id}.png graphs/
+mv minmax_graph_${power_plant_id}.png graph/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $output_file."
     ;;
@@ -375,7 +375,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
     "lv all")
     output_file="lv_all.csv" # Output file
      echo "Station LV:Capacité:Consommation (tous)" > "$output_file"
-     cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" >> "$output_file"
+     cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
      # Check the creation of the file
     if [ -f "$output_file" ]; then
         echo "Nice"
