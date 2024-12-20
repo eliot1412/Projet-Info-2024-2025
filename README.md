@@ -22,6 +22,8 @@ Les fichiers résultats seront dans le dossier principal, les fichiers temporair
 
 Sur certains ordinateurs la première exécution du programme par un nouveau fichier d'entrée de beaucoup de données peut prendre jusqu'à 40 secondes mais les suivantes seront beacoup plus rapides (entre 0.3 et 7 secondes).
 
+Il y a déjà un premier fichier dans input pour tester le programme et il est nommé "c-wire_v00.dat", on laisse l'utilisateur rajouter d'autres fichier dans le dossier input selon ses besoins. 
+
 ## Comment ça fonctionne ?
 
 La partie shell va prendre en entrée le fichier de données et va compiler make dans le dossier codeC, puis le shell vas sélectionner les lignes et colonnes correspondantes à la demande de l'utilisateur. Le C qui recevra ces lignes par entrée directe via le shell vas additionner les valeurs de capacité et de consommation pour chaque identifiant des différentes stations demandées.
