@@ -486,3 +486,4 @@ end_time=$(date +%s.%N)
 # Calculating and displaying time
 elapsed_time=$(echo "$end_time - $start_time" | bc)
 echo "Temps utile de traitement : ${elapsed_time}sec"
+make clean -C "$PROJECT_PATH"
