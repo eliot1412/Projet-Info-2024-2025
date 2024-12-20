@@ -27,5 +27,5 @@ utilis.o: utilis.c utilis.h
 
 # Nettoyer les fichiers objets et l'exécutable
 clean:
-	rm -f $(OBJ) $(EXEC)
+	rm -f $(OBJ)
 	@echo "Nettoyage terminé."
