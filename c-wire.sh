@@ -248,7 +248,7 @@ output_file="lv_all_${power_plant_id}.csv" # Output file
  cat $1 | grep -E "^${power_plant_id};-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
 # Check file creation
 if [ -f "$output_file" ]; then
-    echo "Nice"
+    echo " "
 else
     echo "Erreur : Fichier non généré."
     exit 14
@@ -266,7 +266,7 @@ cat "$output_file" | tail -n +2 | sort -t':' -k3 -n | tail -n 10 >> "$minmax_fil
 
 # Check that the minmax_file file has been created
 if [ -f "$minmax_file" ]; then
-echo "Fichier temporaire généré : nice"
+echo "Fichier temporaire généré"
 else
 echo "Erreur : Fichier temporaire non généré."
 exit 15
