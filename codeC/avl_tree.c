@@ -5,6 +5,7 @@
 #include "avl_tree.h"
 
 // Definition of the functions of the AVL (insert, rotations, équilibrage, etc.)
+// Majority of the functions were not changed from when we did it in class
 
 int min2(int a, int b) { return a < b ? a : b; }
 int max2(int a, int b) { return a > b ? a : b; }
@@ -88,7 +89,8 @@ Tree *createAVL(long long i, long long c, long long l) {
   if (pNew == NULL) {
     exit(10);
   }
-  pNew->id = i;
+  // we added the variables needed for this specific project
+  pNew->id = i; 
   pNew->capacity = c;
   pNew->load = l;
   pNew->pLeft = NULL;
@@ -101,7 +103,7 @@ Tree *insertAVL(Tree *a, long long i, long long c, long long l, int *h) {
   if (a == NULL) {
     *h = 1;
     return createAVL(i, c, l);
-  } else if (i < a->id) {
+  } else if (i < a->id) { // go through the tree by looking at the id and comparing it with the id of the node where the program is
     a->pLeft = insertAVL(a->pLeft, i, c, l, h);
     *h = -*h;
   } else if (i > a->id) {
@@ -111,6 +113,7 @@ Tree *insertAVL(Tree *a, long long i, long long c, long long l, int *h) {
       printf("Erreur : la capacite devient negative pour ID=%lld.\n", i);
       exit(300);
     }
+    // case where we found an existing node with the same id so we had the capacity and and load to it (capacity is 0 in the other lines so its ok to add it too)
     a->capacity += c;
     a->load += l;
     *h = 0;
