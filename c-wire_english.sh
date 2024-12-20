@@ -158,7 +158,9 @@ if [ ! -d "tmp" ]; then
   mkdir tmp
   echo "Le dossier 'tmp' a été créé."
 else
-  echo "Le dossier 'tmp' existe déjà."
+  rm -rf tmp
+  mkdir tmp
+  echo "Le dossier 'tmp' a été supprimé et recréé."
 fi
 
 if [ ! -d "graphs" ]; then
