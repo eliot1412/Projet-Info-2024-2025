@@ -120,8 +120,10 @@ c_source="main3.c"
 PROJECT_PATH=$(dirname "$0")/codeC
 #if [ ! -f "$PROJECT_PATH/$c_executable" ]; then
 
+c_executable_PATH=$(dirname "$0")/codeC/$c_executable
+
 # Check that the executable exists
-  if [ ! -f "$c_executable" ]; then
+  if [ ! -f "$c_executable_PATH" ]; then
         echo "L'exécutable '$c_executable' n'existe pas. Compilation en cours..."
 
            # Start compilation with make
@@ -138,7 +140,6 @@ PROJECT_PATH=$(dirname "$0")/codeC
           fi
   else
         echo "L'exécutable '$c_executable' est déjà présent."
-      echo "Compilation réussie."
   fi
 
 # Start measuring processing time
