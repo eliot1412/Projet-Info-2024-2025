@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "avl_tree.h"
 
-// Définition des fonctions de l'AVL (insert, rotations, équilibrage, etc.)
+// Definition of the functions of the AVL (insert, rotations, équilibrage, etc.)
 
 int min2(int a, int b) { return a < b ? a : b; }
 int max2(int a, int b) { return a > b ? a : b; }
