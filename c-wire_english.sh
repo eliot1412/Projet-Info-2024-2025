@@ -316,7 +316,7 @@ echo "Erreur : Fichier sans différence non généré."
 fi
 mv tmp_${power_plant_id}.csv tmp/
 mv lv_all_minmax_difference_${power_plant_id}.csv tmp/
-mv minmax_graph_${power_plant_id}.png graph/
+mv minmax_graph_${power_plant_id}.png graphs/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $output_file."
     ;;
@@ -454,7 +454,7 @@ else
 fi
 mv tmp.csv tmp/
 mv lv_all_minmax_difference.csv tmp/
-mv minmax_graph.png graph/
+mv minmax_graph.png graphs/
 # Confirmation
 echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et dans $new_file."
     ;;
