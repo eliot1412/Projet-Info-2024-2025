@@ -20,7 +20,7 @@ Exemple : bash c-wire.sh input/c-wire_v00.dat hvb comp 1
 
 Les fichiers résultats seront dans le dossier principal, les fichiers temporaires (les fichiers temporaires sont uniquement pour les cas de lv_all.csv, lv_all_minmax.csv (avec des centrales aussi si vous le mettez)) dans tmp, les graphiques (les stations lv_all_minmax.csv (avec des centrales aussi si vous le mettez) uniquement) dans graphs et nos essais dans tests.
 
-Sur certains ordinateurs la première exécution peut prendre 30 secondes mais les suivantes seront beacoup plus rapides (entre 0.3 et 6 secondes).
+Sur certains ordinateurs la première exécution du programme par un nouveau fichier d'entrée de beaucoup de données peut prendre jusqu'à 40 secondes mais les suivantes seront beacoup plus rapides (entre 0.3 et 7 secondes).
 
 ## Comment ça fonctionne ?
 
