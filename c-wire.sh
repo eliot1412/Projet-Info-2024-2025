@@ -392,7 +392,7 @@ echo "Traitement terminé. Les résultats sont dans $new_file_without_diff et da
      cat $1 | grep -E "^[0-9]+;-;[0-9-]+;[0-9]+;[0-9-]+;[0-9-]+;[0-9-]+" | tr '-' '0'  | cut -d';' --complement -f1,2,3,5,6 | tail -n+1 | "$EXECUTABLE" | sort -t ':' -k2 -n >> "$output_file"
      # Check the creation of the file
     if [ -f "$output_file" ]; then
-        echo "Nice"
+        echo " "
     else
         echo "Erreur : "lv_all" non généré."
         exit 22
