@@ -292,21 +292,31 @@ else
     exit 16
 fi
 
+# Gnuplot pour générer le graphique avec couleurs conditionnelles
 gnuplot << EOF
 set datafile separator ":"
 set terminal pngcairo enhanced
 set output "minmax_graph_${power_plant_id}.png"
 
-set title "Consommation des 20 postes LV les plus et moins chargés"
+set title "Quantité absolue consommée des 10 postes LV les plus et moins chargés"
 set xlabel "Postes"
 set ylabel "Capacité - Consommation (tous)"
 set style data histograms
 set style fill solid 1.0 border -1
 set xtics rotate by -45
-set palette defined (0 "green", 1 "red")
 
-plot "lv_all_minmax_difference_${power_plant_id}.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
+# Dessiner les barres avec des couleurs conditionnelles
+plot "$new_file" using (column(4) > 0 ? column(4) : 1/0):xtic(1) title 'Sous-consommation' lc rgb "green", \
+     '' using (column(4) <= 0 ? column(4) : 1/0):xtic(1) title 'Sur-consommation' lc rgb "red"
 EOF
+
+# Vérifier la création du graphique
+if [ -f "minmax_graph_${power_plant_id}.png" ]; then
+    echo "Graphique généré : minmax_graph_${power_plant_id}.png"
+else
+    echo "Erreur : Graphique non généré."
+fi
+
 
 # New file without the 4th column
 new_file_without_diff="lv_all_minmax_${power_plant_id}.csv"
@@ -438,21 +448,31 @@ fi
     fi
 
 
+# Gnuplot pour générer le graphique avec couleurs conditionnelles
 gnuplot << EOF
 set datafile separator ":"
 set terminal pngcairo enhanced
 set output "minmax_graph.png"
 
-set title "Consommation des 20 postes LV les plus et moins chargés"
+set title "Quantité absolue consommée des 10 postes LV les plus et moins chargés"
 set xlabel "Postes"
 set ylabel "Capacité - Consommation (tous)"
 set style data histograms
 set style fill solid 1.0 border -1
 set xtics rotate by -45
-set palette defined (0 "green", 1 "red")
 
-plot "lv_all_minmax_difference.csv" using 4:xtic(1) title 'Capacité - Consommation' lc palette
+# Dessiner les barres avec des couleurs conditionnelles
+plot "$new_file" using (column(4) > 0 ? column(4) : 1/0):xtic(1) title 'Sous-consommation' lc rgb "green", \
+     '' using (column(4) <= 0 ? column(4) : 1/0):xtic(1) title 'Sur-consommation' lc rgb "red"
 EOF
+
+# Vérifier la création du graphique
+if [ -f "minmax_graph.png" ]; then
+    echo "Graphique généré : minmax_graph.png"
+else
+    echo "Erreur : Graphique non généré."
+fi
+
 
 # New file without the 4th column
 new_file_without_diff="lv_all_minmax.csv"
